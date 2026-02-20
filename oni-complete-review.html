@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oxygen Not Included: Complete Edition Review - Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:        #8B0000;
+      --crimson-mid:    #B01020;
+      --crimson-bright: #D4233A;
+      --crimson-glow:   rgba(180, 20, 40, 0.35);
+      --bg:             #080709;
+      --bg-2:           #0e0b0c;
+      --text:           #f2e8e8;
+      --text-muted:     #9a7e80;
+      --text-faint:     #4a3535;
+      --border:         rgba(139, 0, 0, 0.25);
+      --border-bright:  rgba(212, 35, 58, 0.5);
+      --oni-green:      #2a7a4a;
+      --oni-green-bright: #3daa68;
+      --oni-green-glow: rgba(61, 170, 104, 0.3);
+      --frost-blue:     #1a4a7a;
+      --frost-blue-bright: #4a9acd;
+      --bionic-purple:  #5a2a8a;
+      --bionic-purple-bright: #9a6acd;
+      --dino-amber:     #7a4a10;
+      --dino-amber-bright: #c87a30;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    .bg-canvas { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .glow-blob { position: absolute; border-radius: 50%; filter: blur(90px); animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s); }
+    .blob-1 { width: 600px; height: 600px; background: radial-gradient(circle, #0d2e1a 0%, transparent 70%); top: -150px; left: -100px; --dur: 11s; --delay: 0s; }
+    .blob-2 { width: 350px; height: 350px; background: radial-gradient(circle, #1a0a2e 0%, transparent 70%); bottom: 100px; right: -80px; --dur: 9s; --delay: -4s; }
+    .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #0a1e2e 0%, transparent 70%); top: 50%; right: 20%; --dur: 13s; --delay: -3s; }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.1); }
+    }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.4rem 4rem; background: linear-gradient(to bottom, rgba(8,7,9,0.97), transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--crimson-bright); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.25s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--crimson-bright); transition: right 0.3s ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* --- HERO -------------------------------------------- */
+    .article-hero { position: relative; z-index: 1; padding: 9rem 4rem 4rem; border-bottom: 1px solid var(--border); }
+    .breadcrumb { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
+    .breadcrumb a { color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--crimson-bright); }
+    .breadcrumb .sep { opacity: 0.4; }
+    .article-tags { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--crimson-bright); border: 1px solid var(--crimson); padding: 0.2rem 0.6rem; }
+    .tag-neutral { color: var(--text-faint); border-color: var(--border); }
+    .tag-green { color: var(--oni-green-bright); border-color: var(--oni-green); }
+    .article-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5.5vw, 5rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1rem; max-width: 900px; animation: fadeUp 0.7s ease both; }
+    .article-opening { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic; color: var(--text-muted); max-width: 720px; line-height: 1.55; margin-bottom: 2rem; border-left: 3px solid var(--oni-green); padding-left: 1.5rem; animation: fadeUp 0.7s 0.1s ease both; }
+    .article-meta-bar { display: flex; align-items: center; gap: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--oni-green); flex-shrink: 0; }
+
+    /* --- DISCLAIMER -------------------------------------- */
+    .disclaimer { position: relative; z-index: 1; margin: 0 4rem; padding: 1rem 1.5rem; background: rgba(42, 122, 74, 0.07); border: 1px solid rgba(42, 122, 74, 0.3); border-left: 3px solid var(--oni-green); display: flex; align-items: center; gap: 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--text-muted); }
+    .disclaimer a { color: var(--oni-green-bright); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* --- ARTICLE LAYOUT ---------------------------------- */
+    .article-layout { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 280px; gap: 4rem; padding: 4rem 4rem 6rem; max-width: 1400px; }
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.2rem; line-height: 1.85; color: var(--text-muted); margin-bottom: 1.6rem; }
+    .article-body p strong { color: var(--text); font-weight: 600; }
+    .article-body h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text); margin: 3rem 0 1.2rem; line-height: 1.15; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+
+    .article-image { width: 100%; border: 1px solid var(--border); display: block; margin: 2rem 0; object-fit: cover; }
+    .article-image-caption { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--text-faint); text-align: center; margin-top: -1.5rem; margin-bottom: 2rem; padding: 0.5rem; border: 1px solid var(--border); border-top: none; }
+
+    .article-image-sm { max-width: 200px; border: 1px solid var(--border); display: block; margin: 1.5rem auto; }
+    .article-image-sm-caption { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--text-faint); text-align: center; margin-top: -0.5rem; margin-bottom: 1.5rem; }
+
+    /* --- DLC CARDS --------------------------------------- */
+    .dlc-card {
+      margin: 2.5rem 0;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dlc-card.frost   { --dlc-color: var(--frost-blue-bright);   --dlc-bg: rgba(26,74,122,0.08);   --dlc-border: rgba(74,154,205,0.4); }
+    .dlc-card.bionic  { --dlc-color: var(--bionic-purple-bright); --dlc-bg: rgba(90,42,138,0.08);   --dlc-border: rgba(154,106,205,0.4); }
+    .dlc-card.dino    { --dlc-color: var(--dino-amber-bright);    --dlc-bg: rgba(122,74,16,0.08);    --dlc-border: rgba(200,122,48,0.4); }
+
+    .dlc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--dlc-color); }
+
+    .dlc-header {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 1.5rem 1.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--dlc-bg);
+      position: relative;
+    }
+
+    .dlc-icon { font-size: 2rem; flex-shrink: 0; }
+
+    .dlc-title-wrap { flex: 1; }
+    .dlc-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dlc-color); margin-bottom: 0.2rem; }
+    .dlc-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; }
+
+    .dlc-badge { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.3rem 0.7rem; border: 1px solid var(--dlc-border); color: var(--dlc-color); white-space: nowrap; }
+
+    .dlc-body { padding: 1.8rem 1.5rem 1.8rem 2rem; }
+    .dlc-body p { font-size: 1.1rem; margin-bottom: 1rem; }
+    .dlc-body p:last-child { margin-bottom: 0; }
+
+    .dlc-additions {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem;
+      margin: 1.2rem 0;
+    }
+
+    .dlc-addition {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      padding: 0.7rem 1rem;
+      font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    .dlc-addition::before { content: '+'; color: var(--dlc-color); font-size: 0.8rem; flex-shrink: 0; }
+
+    /* --- LUMBLET IMAGE BOX ------------------------------- */
+    .creature-spotlight {
+      display: flex; align-items: center; gap: 2rem;
+      margin: 1.5rem 0;
+      padding: 1.5rem;
+      background: rgba(122,74,16,0.06);
+      border: 1px solid rgba(200,122,48,0.25);
+    }
+
+    .creature-img { width: 102px; flex-shrink: 0; image-rendering: pixelated; }
+    .creature-caption-wrap { flex: 1; }
+    .creature-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .creature-desc { font-size: 1rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* --- MIXMATCH CALLOUT -------------------------------- */
+    .mixmatch-callout {
+      margin: 2.5rem 0;
+      padding: 1.8rem 2rem;
+      background: rgba(61,170,104,0.05);
+      border: 1px solid rgba(61,170,104,0.25);
+      border-left: 3px solid var(--oni-green-bright);
+    }
+
+    .mixmatch-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--oni-green-bright); margin-bottom: 0.6rem; }
+    .mixmatch-callout p { font-size: 1.1rem !important; margin-bottom: 0 !important; }
+
+    /* --- FINAL SCORE ------------------------------------- */
+    .final-score-section { margin: 4rem 0 2rem; position: relative; text-align: center; }
+    .final-score-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .final-score-label::before, .final-score-label::after { content: ''; width: 3rem; height: 1px; background: rgba(42,122,74,0.4); }
+    .score-reveal { position: relative; display: inline-block; }
+    .score-big { font-family: 'Playfair Display', serif; font-size: 11rem; font-weight: 900; line-height: 1; color: var(--oni-green-bright); letter-spacing: -0.04em; text-shadow: 0 0 80px rgba(61,170,104,0.6), 0 0 160px rgba(61,170,104,0.25); animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .score-denom { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 400; color: var(--text-faint); vertical-align: super; line-height: 1; }
+    .score-verdict-word { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; letter-spacing: 0.05em; }
+    .score-reveal::before { content: ''; position: absolute; inset: -3rem; border-radius: 50%; background: radial-gradient(circle, rgba(61,170,104,0.15) 0%, transparent 70%); animation: blobPulse 4s ease-in-out infinite; }
+
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    /* --- SIDEBAR ----------------------------------------- */
+    .article-sidebar { position: sticky; top: 7rem; align-self: start; display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar-card { background: var(--bg-2); border: 1px solid var(--border); padding: 1.5rem; }
+    .sidebar-card-title { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .sidebar-score { text-align: center; padding: 1rem 0; }
+    .sidebar-score-num { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900; color: var(--oni-green-bright); line-height: 1; text-shadow: 0 0 40px var(--oni-green-glow); }
+    .sidebar-score-denom { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-faint); }
+    .sidebar-score-verdict { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--oni-green-bright); margin-top: 0.4rem; }
+    .sidebar-detail { display: flex; flex-direction: column; gap: 0.7rem; }
+    .sidebar-row { display: flex; justify-content: space-between; align-items: baseline; font-family: 'DM Mono', monospace; font-size: 0.62rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+    .sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sidebar-row-key { letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+    .sidebar-row-val { color: var(--text); text-align: right; max-width: 55%; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .toc-list a { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-faint); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s; padding: 0.3rem 0; }
+    .toc-list a:hover { color: var(--oni-green-bright); }
+    .toc-list a::before { content: ''; width: 1rem; height: 1px; background: currentColor; flex-shrink: 0; }
+    .toc-divider { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint); opacity: 0.5; padding: 0.4rem 0 0.2rem; border-top: 1px solid var(--border); margin-top: 0.4rem; }
+
+    .sidebar-link { display: block; background: rgba(42,122,74,0.08); border: 1px solid rgba(42,122,74,0.3); padding: 1.2rem; text-decoration: none; transition: background 0.25s, border-color 0.25s; }
+    .sidebar-link:hover { background: rgba(42,122,74,0.14); border-color: var(--oni-green); }
+    .sidebar-link-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--oni-green-bright); margin-bottom: 0.4rem; }
+    .sidebar-link-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; }
+    footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; color: var(--text-faint); }
+    footer .footer-logo span { color: var(--crimson); }
+    footer p { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-faint); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <div class="article-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="game-reviews.html">Game Reviews</a>
+      <span class="sep">/</span>
+      <span>ONI: Complete Edition</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Game Review</span>
+      <span class="tag">Colony Sim</span>
+      <span class="tag">Strategy</span>
+      <span class="tag-green tag">Complete Edition</span>
+      <span class="tag-neutral tag">PC</span>
+    </div>
+    <h1 class="article-title">Oxygen Not Included:<br/><em style="color:var(--oni-green-bright);">Complete Edition</em></h1>
+    <p class="article-opening">
+      Everything the base game is, plus three expansions that each rewrite the rules of how you have to think. The DLCs do not add content to ONI - they add entirely new games inside it.
+    </p>
+    <div class="article-meta-bar">
+      <div class="meta-item"><div class="meta-dot"></div><span>Klei Entertainment</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>Colony Sim / Strategy</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>PC</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>~25 min read</span></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <span>ℹ</span>
+    <span>This review covers the base game, Spaced Out!, and all three DLC packs. For the base game and Spaced Out! only, see <a href="oni-review.html">the standard review here</a>.</span>
+  </div>
+
+  <div class="article-layout">
+    <article class="article-body">
+
+      <p>
+        Everything covered in the <a href="oni-review.html" style="color:var(--oni-green-bright);text-underline-offset:3px;">base game review</a> remains true here. Oxygen Not Included is one of the best designed games ever made. The simulation is deep, the challenge is fair, the loop is endlessly engaging. If you have not read that review, start there.
+      </p>
+
+      <p>
+        This review covers what the <strong>three DLC packs</strong> add to that foundation - and the short answer is: a great deal. Each one is still receiving updates. Each one changes the way you have to approach the game in meaningful ways. And all three can be played together, mixed and matched, layered on top of each other for a genuinely different experience every run.
+      </p>
+
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/457140/capsule_616x353.jpg?t=1766014410" alt="Oxygen Not Included" class="article-image" />
+
+      <h2 id="frosty">The Frosty Planet Pack</h2>
+
+      <div class="dlc-card frost">
+        <div class="dlc-header">
+          <div class="dlc-icon">🧊</div>
+          <div class="dlc-title-wrap">
+            <div class="dlc-eyebrow">DLC 1</div>
+            <div class="dlc-title">Frosty Planet Pack</div>
+          </div>
+          <div class="dlc-badge">Active Updates</div>
+        </div>
+        <div class="dlc-body">
+          <div class="dlc-additions">
+            <div class="dlc-addition">4 New Critters</div>
+            <div class="dlc-addition">2 New Morphs</div>
+            <div class="dlc-addition">New Plants</div>
+            <div class="dlc-addition">New Biomes</div>
+            <div class="dlc-addition">Starting Planetoid</div>
+            <div class="dlc-addition">New Achievements</div>
+          </div>
+          <p>The Frosty Planet Pack introduces a starting planetoid locked in deep cold. The core challenge is elegantly stated: your planet is frozen. Heat it up too much, and the ice melts. Melt enough of it, and your dupes drown. Survive with the cold, not against it.</p>
+          <p>Deep within the planetoid, ancient machines are capable of generating extreme heat. Get them running, and you have access to what amounts to nearly infinite free energy - if you can handle the consequences of what you are sitting on top of. It is a brilliant constraint. Every ONI player's instinct is to heat things up for power and cool their base down. Here, the ground itself pushes back.</p>
+        </div>
+      </div>
+
+      <h2 id="bionic">The Bionic Booster Pack</h2>
+
+      <div class="dlc-card bionic">
+        <div class="dlc-header">
+          <div class="dlc-icon">🤖</div>
+          <div class="dlc-title-wrap">
+            <div class="dlc-eyebrow">DLC 2</div>
+            <div class="dlc-title">Bionic Booster Pack</div>
+          </div>
+          <div class="dlc-badge">Active Updates</div>
+        </div>
+        <div class="dlc-body">
+          <div class="dlc-additions">
+            <div class="dlc-addition">Bionic Duplicants</div>
+            <div class="dlc-addition">New Buildings</div>
+            <div class="dlc-addition">Chip System</div>
+            <div class="dlc-addition">New Power Demands</div>
+          </div>
+          <p>This is possibly my favourite DLC in the pack. The Bionic Booster Pack introduces <strong>Bionic duplicants</strong> - or Boops - an entirely new type of colony member that plays by completely different rules.</p>
+          <p>Like regular dupes, Boops require oxygen. That is where the similarities end. They cannot touch liquids without taking stress and damage. They need to lubricate regularly. They can go days without maintenance. They do not sleep. They do not eat food - but they consume a significant amount of power. They have no skills in the conventional sense; instead, they use bionic chips to specialise and improve.</p>
+          <p>Managing a mixed colony of organic dupes and Boops forces you to build infrastructure you would never otherwise need. Your power grid has to be genuinely robust. Your liquid-handling needs to be impeccable. The new buildings this DLC adds are powerful efficiency multipliers - but nothing is free. The power cost alone will push you to overhaul your entire energy setup.</p>
+        </div>
+      </div>
+
+      <h2 id="dino">The Prehistoric Planet Pack</h2>
+
+      <div class="dlc-card dino">
+        <div class="dlc-header">
+          <div class="dlc-icon">🦕</div>
+          <div class="dlc-title-wrap">
+            <div class="dlc-eyebrow">DLC 3</div>
+            <div class="dlc-title">Prehistoric Planet Pack</div>
+          </div>
+          <div class="dlc-badge">Active Updates</div>
+        </div>
+        <div class="dlc-body">
+          <div class="dlc-additions">
+            <div class="dlc-addition">4 New Dinosaurs</div>
+            <div class="dlc-addition">New Critter Morph</div>
+            <div class="dlc-addition">Mosquitoes</div>
+            <div class="dlc-addition">New Pollination</div>
+            <div class="dlc-addition">New Plants</div>
+            <div class="dlc-addition">New Resources</div>
+          </div>
+          <p>Four new dinosaurs, a new critter morph that actually helps with early-game oxygen production, mosquitoes, a new pollination system with new plant types, new resources - the Prehistoric Planet Pack adds a tremendous amount to the early and mid game. There are new ways to grow things, new creatures to wrangle, and new problems to solve from the very first cycle.</p>
+          <p>And then there is the Lumblet.</p>
+
+          <div class="creature-spotlight">
+            <img src="https://oxygennotincluded.wiki.gg/images/thumb/9/96/Lumblet.png/102px-Lumblet.png?8352bd" alt="Lumblet" class="creature-img" />
+            <div class="creature-caption-wrap">
+              <div class="creature-name">The Lumblet</div>
+              <div class="creature-desc">A small, earnest creature introduced in the Prehistoric Planet Pack. Do not let it die. You will feel terrible about it. It is doing its best.</div>
+            </div>
+          </div>
+
+          <p>The starting planetoid for this DLC is not the paradise it initially appears. On cycle 200, a meteor will arrive - and it will not just damage the surface. It will engulf the entire planetoid, turning your base into a molten volcanic hellscape.</p>
+          <p>You have two options: find a way to destroy the meteor before it arrives, or fortify your living area against catastrophic heat. Both are valid approaches. Neither is easy. The result is a DLC where your priorities are fundamentally different from the moment you start - you are always building with the meteor in the back of your mind, every decision shadowed by a clock you can see counting down.</p>
+        </div>
+      </div>
+
+      <h2 id="mixmatch">Mix, Match, and Combine</h2>
+
+      <div class="mixmatch-callout">
+        <div class="mixmatch-label">Worth knowing</div>
+        <p>All three DLC packs can be combined freely - you can run any subset of them together, or all three at once, and they layer coherently. A frozen planet with bionic dupes and a 200-cycle meteor countdown is a very different game from the base experience. It is also, for the right kind of player, a deeply compelling one.</p>
+      </div>
+
+      <p>
+        Each DLC breathes new life into a game that, frankly, did not need it to justify itself. What they do instead is give players who have exhausted the base experience new constraints to work within - new questions to answer, new systems to master. They are well worth it, every one of them.
+      </p>
+
+      <h2 id="verdict">Final Thoughts</h2>
+
+      <p>
+        If you are buying Oxygen Not Included, get the DLCs. The base game is a masterpiece. The DLCs are a masterpiece with three more rooms you did not know it needed. They are still being updated. They are still growing. The Klei team's commitment to this game over the years has been remarkable, and it shows in every layer of what is here.
+      </p>
+
+      <p>
+        Oxygen Not Included: Complete Edition is the definitive way to play one of the greatest games ever made. There is no higher recommendation I can give.
+      </p>
+
+      <div class="final-score-section">
+        <div class="final-score-label">Final Verdict</div>
+        <div class="score-reveal">
+          <div class="score-big">10<span class="score-denom">/10</span></div>
+        </div>
+        <div class="score-verdict-word">Masterpiece</div>
+      </div>
+
+    </article>
+
+    <aside class="article-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Score</div>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num">10<span class="sidebar-score-denom">/10</span></div>
+          <div class="sidebar-score-verdict">Masterpiece</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Edition Details</div>
+        <div class="sidebar-detail">
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Developer</span>
+            <span class="sidebar-row-val">Klei Entertainment</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Platform</span>
+            <span class="sidebar-row-val">PC</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Includes</span>
+            <span class="sidebar-row-val">Spaced Out! + 3 DLC</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Active Updates</span>
+            <span class="sidebar-row-val">Yes (all DLC)</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Mix & Match DLC</span>
+            <span class="sidebar-row-val">Yes</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="oni-review.html" class="sidebar-link">
+        <div class="sidebar-link-label">Also Available</div>
+        <div class="sidebar-link-title">Standard ONI Review - base game & Spaced Out! only &rarr;</div>
+      </a>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Contents</div>
+        <ul class="toc-list">
+          <div class="toc-divider">DLC</div>
+          <li><a href="#frosty">Frosty Planet Pack</a></li>
+          <li><a href="#bionic">Bionic Booster Pack</a></li>
+          <li><a href="#dino">Prehistoric Planet Pack</a></li>
+          <div class="toc-divider">Verdict</div>
+          <li><a href="#mixmatch">Mix & Match</a></li>
+          <li><a href="#verdict">Final Thoughts</a></li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews - All opinions are my own.</p>
+  </footer>
+
+</body>
+</html>

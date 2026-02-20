@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Reviews — Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #080709;
+      --bg-2:          #0e0b0c;
+      --text:          #f2e8e8;
+      --text-muted:    #9a7e80;
+      --text-faint:    #4a3535;
+      --border:        rgba(139, 0, 0, 0.25);
+      --border-bright: rgba(212, 35, 58, 0.5);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ─── BG ─────────────────────────────────────────────── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #8B0000 0%, transparent 70%);
+      top: -100px; right: -100px;
+      --dur: 10s; --delay: 0s;
+    }
+    .blob-2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, #5a0000 0%, transparent 70%);
+      bottom: 200px; left: -50px;
+      --dur: 8s; --delay: -4s;
+    }
+    .blob-3 {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, #B01020 0%, transparent 70%);
+      top: 60%; right: 20%;
+      --dur: 12s; --delay: -6s;
+    }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.07; transform: scale(1); }
+      50%       { opacity: 0.18; transform: scale(1.12); }
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,7,9,0.95), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--crimson-bright); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .nav-links a.active,
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 100%;
+      height: 1px;
+      background: var(--crimson-bright);
+      transition: right 0.3s ease;
+    }
+
+    .nav-links a.active::after,
+    .nav-links a:hover::after { right: 0; }
+
+    /* ─── PAGE HERO ───────────────────────────────────────── */
+    .page-hero {
+      position: relative;
+      z-index: 1;
+      padding: 10rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-hero-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .page-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-eyebrow::before {
+      content: '';
+      width: 2rem;
+      height: 1px;
+      background: var(--crimson-bright);
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .page-title em {
+      font-style: italic;
+      color: var(--crimson-bright);
+    }
+
+    .page-count {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--text-faint);
+      line-height: 1;
+    }
+
+    /* ─── FILTER BAR ──────────────────────────────────────── */
+    .filter-bar {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem 4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .filter-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-right: 0.5rem;
+    }
+
+    .filter-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      color: var(--text);
+      border-color: var(--crimson-bright);
+      background: rgba(139,0,0,0.1);
+    }
+
+    /* ─── REVIEWS LAYOUT ──────────────────────────────────── */
+    .reviews-section {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 4rem 6rem;
+    }
+
+    /* Big featured review */
+    .review-feature {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5px;
+      background: var(--bg-2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    .review-feature:hover {
+      border-color: var(--border-bright);
+    }
+
+    .review-feature-art {
+      position: relative;
+      min-height: 420px;
+      background: 
+        radial-gradient(ellipse at 40% 50%, rgba(139,0,0,0.5) 0%, transparent 65%),
+        linear-gradient(135deg, #1a0505 0%, #0e0b0c 60%, #150808 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .review-feature-art::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 40px,
+        rgba(139,0,0,0.05) 40px,
+        rgba(139,0,0,0.05) 41px
+      );
+    }
+
+    .art-score-large {
+      font-family: 'Playfair Display', serif;
+      font-size: 8rem;
+      font-weight: 900;
+      color: rgba(139,0,0,0.2);
+      line-height: 1;
+      position: absolute;
+      bottom: 1rem;
+      right: 2rem;
+    }
+
+    .art-platform {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      border: 1px solid var(--text-faint);
+      padding: 0.2rem 0.5rem;
+    }
+
+    .review-feature-body {
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .review-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      border: 1px solid var(--crimson);
+      padding: 0.2rem 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .review-feature-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .review-developer {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      margin-bottom: 1.5rem;
+    }
+
+    .review-excerpt {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      flex: 1;
+    }
+
+    .review-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .score-display {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .score-box {
+      background: var(--crimson);
+      color: var(--text);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      width: 3.5rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--crimson-mid);
+      box-shadow: 0 0 25px var(--crimson-glow);
+    }
+
+    .score-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .review-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      text-align: right;
+    }
+
+    /* ─── REVIEW GRID ─────────────────────────────────────── */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+    }
+
+    .review-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 280px;
+    }
+
+    .review-card:hover {
+      border-color: var(--border-bright);
+      background: #100c0d;
+    }
+
+    .review-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--crimson-bright);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .review-card:hover::before { opacity: 1; }
+
+    .review-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0.5rem 0 0.35rem;
+    }
+
+    .review-card-dev {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      margin-bottom: 0.75rem;
+    }
+
+    .review-card-excerpt {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .review-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .score-sm {
+      background: var(--crimson);
+      color: var(--text);
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      width: 2.6rem;
+      height: 2.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--crimson-mid);
+    }
+
+    .card-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+    }
+
+    /* ─── VERDICT SECTION ─────────────────────────────────── */
+    .verdict-strip {
+      position: relative;
+      z-index: 1;
+      margin: 0 4rem 6rem;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .verdict-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.4;
+      max-width: 700px;
+    }
+
+    .verdict-text h3 strong {
+      color: var(--text);
+      font-style: normal;
+    }
+
+    .verdict-sig {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-style: italic;
+      color: var(--crimson-bright);
+      white-space: nowrap;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text-faint);
+    }
+
+    footer .footer-logo span { color: var(--crimson); }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--text-faint);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section label rows */
+    .row-label {
+      position: relative;
+      z-index: 1;
+      padding: 0 4rem;
+      margin: 3rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .row-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    .row-label span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html" class="active">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div>
+        <div class="page-eyebrow">Rosie Reviews</div>
+        <h1 class="page-title">Game<br/><em>Reviews.</em></h1>
+      </div>
+      <div class="page-count">4</div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter(this,'all')">All</button>
+    <button class="filter-btn" onclick="setFilter(this,'rpg')">RPG</button>
+    <button class="filter-btn" onclick="setFilter(this,'action')">Action</button>
+    <button class="filter-btn" onclick="setFilter(this,'indie')">Indie</button>
+    <button class="filter-btn" onclick="setFilter(this,'fps')">FPS</button>
+    <button class="filter-btn" onclick="setFilter(this,'strategy')">Strategy</button>
+  </div>
+
+  <!-- Reviews Section -->
+  <section class="reviews-section">
+
+    <!-- Featured Review — Dredge -->
+    <a href="dredge-review.html" style="text-decoration:none;color:inherit;display:block;">
+      <div class="review-feature">
+        <div class="review-feature-art">
+          <span class="art-platform">PC / PS5 / Xbox / Switch</span>
+          <span class="art-score-large">9</span>
+        </div>
+        <div class="review-feature-body">
+          <div>
+            <span class="review-tag">Featured Review &mdash; Indie / Horror</span>
+            <h2 class="review-feature-title">Dredge</h2>
+            <p class="review-developer">Black Salt Games &mdash; 2023</p>
+            <p class="review-excerpt">
+              A fishing game that quietly, patiently becomes something far more sinister. Dredge is a masterpiece of atmosphere — simple systems layered over a story about guilt, grief, and the things we drag up from the deep when we're not careful.
+            </p>
+          </div>
+          <div class="review-footer">
+            <div class="score-display">
+              <div class="score-box">9.0</div>
+              <div>
+                <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:0.95rem;">Exceptional</div>
+                <div class="score-label">Final Verdict</div>
+              </div>
+            </div>
+            <div class="review-meta">
+              <div>Feb 2025</div>
+              <div>~20 min read</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+
+  <!-- Review Grid -->
+  <div style="position:relative;z-index:1;padding:1.5px 4rem 0;">
+    <div class="reviews-grid">
+
+      <a href="survivalists-review.html" style="text-decoration:none;color:inherit;display:contents;">
+        <div class="review-card">
+          <div>
+            <span class="review-tag" style="font-size:0.58rem;padding:0.15rem 0.5rem;">Survival / Sandbox</span>
+            <h3 class="review-card-title">The Survivalists</h3>
+            <p class="review-card-dev">Team17 - PC / PS4 / Xbox / Switch</p>
+            <p class="review-card-excerpt">Still a solid, enjoyable survival sandbox - but the exploration update pushed it in a direction that muddied what made it special. Better with friends than alone.</p>
+          </div>
+          <div class="review-card-footer">
+            <span class="score-sm">7.0</span>
+            <span class="card-date">Feb 2025</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="oni-review.html" style="text-decoration:none;color:inherit;display:contents;">
+        <div class="review-card">
+          <div>
+            <span class="review-tag" style="font-size:0.58rem;padding:0.15rem 0.5rem;">Colony Sim</span>
+            <h3 class="review-card-title">Oxygen Not Included</h3>
+            <p class="review-card-dev">Klei Entertainment - PC (Spaced Out!)</p>
+            <p class="review-card-excerpt">Arguably the best designed game ever made. Complicated, fair, and completely relentless. If something can go wrong, it will - and you will love it for that.</p>
+          </div>
+          <div class="review-card-footer">
+            <span class="score-sm" style="background:var(--crimson);box-shadow:0 0 15px rgba(61,170,104,0.5);border-color:#2a7a4a;color:#3daa68;">10</span>
+            <span class="card-date">Feb 2025</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="oni-complete-review.html" style="text-decoration:none;color:inherit;display:contents;">
+        <div class="review-card">
+          <div>
+            <span class="review-tag" style="font-size:0.58rem;padding:0.15rem 0.5rem;color:#3daa68;border-color:#2a7a4a;">Colony Sim - Complete Ed.</span>
+            <h3 class="review-card-title">Oxygen Not Included: Complete</h3>
+            <p class="review-card-dev">Klei Entertainment - PC (All DLC)</p>
+            <p class="review-card-excerpt">The definitive version. Three DLC packs that each fundamentally change how you think - a frozen world, bionic duplicants, and a 200-cycle meteor countdown. Essential.</p>
+          </div>
+          <div class="review-card-footer">
+            <span class="score-sm" style="background:var(--crimson);box-shadow:0 0 15px rgba(61,170,104,0.5);border-color:#2a7a4a;color:#3daa68;">10</span>
+            <span class="card-date">Feb 2025</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  </section>
+
+  <!-- Verdict quote strip -->
+  <div class="verdict-strip">
+    <div class="verdict-text">
+      <h3>"I play every game <strong>to completion</strong> before writing a single word. If I haven't finished it, you won't find a review of it here."</h3>
+    </div>
+    <div class="verdict-sig">— Rosie</div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews &mdash; All opinions are my own.</p>
+  </footer>
+
+  <script>
+    function setFilter(btn, genre) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

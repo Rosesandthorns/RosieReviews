@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #080709;
+      --bg-2:          #0e0b0c;
+      --text:          #f2e8e8;
+      --text-muted:    #9a7e80;
+      --text-faint:    #4a3535;
+      --border:        rgba(139, 0, 0, 0.25);
+      --border-bright: rgba(212, 35, 58, 0.5);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ─── DYNAMIC BACKGROUND ─────────────────────────────── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0;
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #8B0000 0%, transparent 70%);
+      top: -200px; left: -150px;
+      --dur: 9s; --delay: 0s;
+    }
+    .blob-2 {
+      width: 450px; height: 450px;
+      background: radial-gradient(circle, #B01020 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      --dur: 11s; --delay: -3s;
+    }
+    .blob-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #6B0000 0%, transparent 70%);
+      top: 40%; left: 50%;
+      --dur: 7s; --delay: -5s;
+    }
+    .blob-4 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #D4233A 0%, transparent 70%);
+      top: 20%; right: 15%;
+      --dur: 13s; --delay: -2s;
+    }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.08; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.15); }
+    }
+
+    /* Grain overlay */
+    .bg-canvas::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,7,9,0.95), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--crimson-bright);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 100%;
+      height: 1px;
+      background: var(--crimson-bright);
+      transition: right 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* ─── HERO ────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 4rem;
+      padding-top: 6rem;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 2.5rem;
+      height: 1px;
+      background: var(--crimson-bright);
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      max-width: 900px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .hero-title .italic {
+      font-style: italic;
+      color: var(--crimson-bright);
+    }
+
+    .hero-sub {
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      max-width: 520px;
+      line-height: 1.7;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 3rem;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      background: var(--crimson);
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--crimson-mid);
+      transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--crimson-mid);
+      box-shadow: 0 0 30px var(--crimson-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      background: transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      transition: color 0.25s, border-color 0.25s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--crimson-bright), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── DIVIDER ─────────────────────────────────────────── */
+    .section-divider {
+      position: relative;
+      z-index: 1;
+      padding: 0 4rem;
+      margin-bottom: 5rem;
+    }
+
+    .divider-line {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .divider-line::before,
+    .divider-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+
+    .divider-line::after {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+
+    .divider-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+
+    /* ─── FEATURED ────────────────────────────────────────── */
+    .featured {
+      position: relative;
+      z-index: 1;
+      padding: 2rem 4rem 6rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: gap 0.2s;
+    }
+
+    .section-link:hover { gap: 0.8rem; }
+
+    /* Featured card - big one */
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      gap: 1.5px;
+    }
+
+    .card-main {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      position: relative;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .card-main:hover { border-color: var(--border-bright); }
+
+    .card-main-bg {
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(to top, rgba(8,7,9,0.97) 0%, rgba(8,7,9,0.5) 50%, rgba(139,0,0,0.1) 100%);
+    }
+
+    .card-main-art {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 70% 30%, rgba(139,0,0,0.4) 0%, transparent 60%),
+        linear-gradient(135deg, #1a0505 0%, #0e0b0c 50%, #0a0505 100%);
+    }
+
+    /* Geometric decorative lines on main card */
+    .card-main-art::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 60px,
+          rgba(139,0,0,0.04) 60px,
+          rgba(139,0,0,0.04) 61px
+        );
+    }
+
+    .card-main-content {
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      border: 1px solid var(--crimson);
+      padding: 0.2rem 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-excerpt {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+    }
+
+    .card-score {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .score-badge {
+      background: var(--crimson);
+      color: var(--text);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--crimson-mid);
+      box-shadow: 0 0 20px var(--crimson-glow);
+    }
+
+    /* Side cards */
+    .card-side {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .card-side:hover {
+      border-color: var(--border-bright);
+      background: #100c0d;
+    }
+
+    .card-side::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--crimson-bright), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card-side:hover::before { opacity: 1; }
+
+    .card-side .card-title {
+      font-size: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    /* ─── LATEST SECTION ──────────────────────────────────── */
+    .latest {
+      position: relative;
+      z-index: 1;
+      padding: 0 4rem 6rem;
+    }
+
+    .latest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+    }
+
+    .card-list {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+    }
+
+    .card-list:hover {
+      border-color: var(--border-bright);
+      background: #100c0d;
+    }
+
+    .card-list::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--crimson), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card-list:hover::after { opacity: 1; }
+
+    .card-list .card-title {
+      font-size: 1.1rem;
+      margin: 0.5rem 0 0.5rem;
+    }
+
+    .card-list .card-excerpt {
+      font-size: 0.9rem;
+    }
+
+    /* ─── MARQUEE ─────────────────────────────────────────── */
+    .marquee-section {
+      position: relative;
+      z-index: 1;
+      padding: 3rem 0;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 5rem;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      animation: marqueeScroll 25s linear infinite;
+    }
+
+    .marquee-item {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--text-faint);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .marquee-item .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--crimson-bright);
+      display: inline-block;
+    }
+
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── ABOUT STRIP ─────────────────────────────────────── */
+    .about-strip {
+      position: relative;
+      z-index: 1;
+      padding: 0 4rem 8rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .about-text .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .about-text .eyebrow::before {
+      content: '';
+      width: 1.5rem;
+      height: 1px;
+      background: var(--crimson-bright);
+    }
+
+    .about-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text h2 em {
+      font-style: italic;
+      color: var(--crimson-bright);
+    }
+
+    .about-text p {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .stat-item {
+      border-left: 2px solid var(--crimson);
+      padding-left: 1.5rem;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text-faint);
+    }
+
+    footer .footer-logo span { color: var(--crimson); }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--text-faint);
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── HOVER GLOW ON CARDS ─────────────────────────────── */
+    .card-main:hover .card-main-bg {
+      background:
+        linear-gradient(to top, rgba(8,7,9,0.95) 0%, rgba(8,7,9,0.45) 50%, rgba(180,20,40,0.15) 100%);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Background -->
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+    <div class="glow-blob blob-4"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Independent Reviews &mdash; No Ads, No Bias</p>
+    <h1 class="hero-title">
+      Honest.<br/><span class="italic">Unfiltered.</span><br/>In Depth.
+    </h1>
+    <p class="hero-sub">
+      Detailed, passionate reviews on the games you play and the tech you use. Written by Rosie — for people who actually care.
+    </p>
+    <div class="hero-ctas">
+      <a href="game-reviews.html" class="btn-primary">Read Game Reviews</a>
+      <a href="tech-reviews.html" class="btn-ghost">Explore Tech</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <div class="marquee-item">Games <span class="dot"></span></div>
+      <div class="marquee-item">Technology <span class="dot"></span></div>
+      <div class="marquee-item">Honest Opinions <span class="dot"></span></div>
+      <div class="marquee-item">In-Depth Analysis <span class="dot"></span></div>
+      <div class="marquee-item">Rosie Reviews <span class="dot"></span></div>
+      <div class="marquee-item">Games <span class="dot"></span></div>
+      <div class="marquee-item">Technology <span class="dot"></span></div>
+      <div class="marquee-item">Honest Opinions <span class="dot"></span></div>
+      <div class="marquee-item">In-Depth Analysis <span class="dot"></span></div>
+      <div class="marquee-item">Rosie Reviews <span class="dot"></span></div>
+    </div>
+  </div>
+
+  <!-- About Strip -->
+  <section class="about-strip">
+    <div class="about-text">
+      <div class="eyebrow">About Rosie Reviews</div>
+      <h2>Reviews written by a <em>real player</em>, not a press room.</h2>
+      <p>
+        I'm Rosie. I write about the games I actually play through to completion and the tech I actually use day to day. No embargoes. No publisher access passes. Just genuine, detailed, unfiltered takes.
+      </p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-item">
+        <div class="stat-number"><span id="review-counter">0</span>+</div>
+        <div class="stat-label">Reviews Published</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">6,000+</div>
+        <div class="stat-label">Hours Playtested</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Independent &amp; Ad-Free</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews &mdash; All opinions are my own.</p>
+  </footer>
+
+  <script>
+    // Animate review counter from 0 to 60 over 10 seconds
+    const counterEl = document.getElementById('review-counter');
+    const target = 60;
+    const duration = 10000;
+    let startTime = null;
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animateCounter(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+      counterEl.textContent = Math.floor(eased * target);
+      if (progress < 1) {
+        requestAnimationFrame(animateCounter);
+      } else {
+        counterEl.textContent = target;
+      }
+    }
+
+    // Start counting when the about section scrolls into view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          requestAnimationFrame(animateCounter);
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    observer.observe(document.querySelector('.about-strip'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dredge Review - Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #080709;
+      --bg-2:          #0e0b0c;
+      --text:          #f2e8e8;
+      --text-muted:    #9a7e80;
+      --text-faint:    #4a3535;
+      --border:        rgba(139, 0, 0, 0.25);
+      --border-bright: rgba(212, 35, 58, 0.5);
+      --teal-accent:   #1a4a4a;
+      --teal-glow:     rgba(20, 80, 80, 0.3);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ─── BG BLOBS ────────────────────────────────────────── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #0a2e2e 0%, transparent 70%);
+      top: -100px; left: -150px;
+      --dur: 11s; --delay: 0s;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #8B0000 0%, transparent 70%);
+      bottom: 0; right: -80px;
+      --dur: 9s; --delay: -4s;
+    }
+    .blob-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #0d3535 0%, transparent 70%);
+      top: 50%; left: 40%;
+      --dur: 13s; --delay: -7s;
+    }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.1); }
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,7,9,0.97), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--crimson-bright); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 100%;
+      height: 1px;
+      background: var(--crimson-bright);
+      transition: right 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* ─── ARTICLE HERO ────────────────────────────────────── */
+    .article-hero {
+      position: relative;
+      z-index: 1;
+      padding: 9rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .breadcrumb a {
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumb a:hover { color: var(--crimson-bright); }
+    .breadcrumb .sep { opacity: 0.4; }
+
+    .article-tags {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      border: 1px solid var(--crimson);
+      padding: 0.2rem 0.6rem;
+    }
+
+    .tag-neutral {
+      color: var(--text-faint);
+      border-color: var(--border);
+    }
+
+    .article-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      max-width: 900px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .article-opening {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.55;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+      border-left: 3px solid var(--crimson);
+      padding-left: 1.5rem;
+    }
+
+    .article-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      flex-wrap: wrap;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--crimson); flex-shrink: 0; }
+
+    /* ─── DISCLAIMER ──────────────────────────────────────── */
+    .disclaimer {
+      position: relative;
+      z-index: 1;
+      margin: 0 4rem;
+      padding: 1rem 1.5rem;
+      background: rgba(26, 74, 74, 0.08);
+      border: 1px solid rgba(26, 74, 74, 0.35);
+      border-left: 3px solid #2a7a7a;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .disclaimer a {
+      color: #4aabab;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .disclaimer-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    /* ─── STATS BLOCK ─────────────────────────────────────── */
+    .stats-block {
+      position: relative;
+      z-index: 1;
+      margin: 3rem 4rem;
+      border: 1px solid var(--border-bright);
+      background: var(--bg-2);
+      overflow: hidden;
+    }
+
+    .stats-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 0% 50%, rgba(10, 46, 46, 0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 100% 50%, rgba(139,0,0,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .stats-header {
+      position: relative;
+      padding: 1.2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stats-header-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .stats-header-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    .stats-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+    }
+
+    .stat-cell {
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-cell:hover {
+      background: rgba(139,0,0,0.06);
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      position: relative;
+    }
+
+    .stat-cell:nth-child(odd) .stat-num { color: var(--crimson-bright); }
+    .stat-cell:nth-child(even) .stat-num { color: #4aabab; }
+
+    .stat-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      line-height: 1.4;
+    }
+
+    /* ─── ARTICLE BODY ────────────────────────────────────── */
+    .article-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 4rem;
+      padding: 4rem 4rem 6rem;
+      max-width: 1400px;
+    }
+
+    .article-body {
+      min-width: 0;
+    }
+
+    .article-body p {
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text-muted);
+      margin-bottom: 1.6rem;
+    }
+
+    .article-body p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .article-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 3rem 0 1.2rem;
+      line-height: 1.15;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── SPOILER WARNING ─────────────────────────────────── */
+    .spoiler-warning {
+      position: relative;
+      margin: 3.5rem 0;
+      overflow: hidden;
+    }
+
+    .spoiler-warning-inner {
+      border: 2px solid var(--crimson-bright);
+      background: rgba(139, 0, 0, 0.08);
+      padding: 0;
+      position: relative;
+    }
+
+    .spoiler-warning-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(139,0,0,0.05) 8px,
+        rgba(139,0,0,0.05) 9px
+      );
+    }
+
+    .spoiler-top-bar {
+      background: var(--crimson);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .spoiler-skull { font-size: 1rem; }
+
+    .spoiler-top-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .spoiler-content {
+      position: relative;
+      padding: 1.5rem 2rem;
+    }
+
+    .spoiler-main-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .spoiler-sub-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .spoiler-glow {
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,35,58,0.5) 0%, transparent 70%);
+      animation: blobPulse 3s ease-in-out infinite;
+    }
+
+    /* ─── SECTION HEADERS (ENDINGS) ──────────────────────── */
+    .ending-header {
+      position: relative;
+      margin: 3rem 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .ending-header::before {
+      content: '';
+      position: absolute;
+      inset: -1.5rem -2rem;
+      pointer-events: none;
+    }
+
+    .ending-badge {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .ending-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .ending-icon.bad {
+      background: rgba(139,0,0,0.2);
+      border: 1px solid var(--crimson-bright);
+      box-shadow: 0 0 20px rgba(139,0,0,0.4);
+    }
+
+    .ending-icon.good {
+      background: rgba(10,60,40,0.3);
+      border: 1px solid #2a8a5a;
+      box-shadow: 0 0 20px rgba(20,100,60,0.4);
+    }
+
+    .ending-label-wrap { flex: 1; }
+
+    .ending-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    .ending-eyebrow.bad { color: var(--crimson-bright); }
+    .ending-eyebrow.good { color: #4aaa78; }
+
+    .ending-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1.05;
+    }
+
+    .ending-title.bad { color: var(--text); }
+    .ending-title.good { color: var(--text); }
+
+    .ending-rule {
+      flex: 1;
+      height: 1px;
+    }
+
+    .ending-rule.bad {
+      background: linear-gradient(to right, var(--crimson-bright), transparent);
+    }
+
+    .ending-rule.good {
+      background: linear-gradient(to right, #2a8a5a, transparent);
+    }
+
+    /* ─── ARTICLE IMAGE ───────────────────────────────────── */
+    .article-image {
+      width: 100%;
+      border: 1px solid var(--border);
+      display: block;
+      margin: 2rem 0;
+      object-fit: cover;
+    }
+
+    .article-image-caption {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--text-faint);
+      text-align: center;
+      margin-top: -1.5rem;
+      margin-bottom: 2rem;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    /* ─── SANITY LIST ─────────────────────────────────────── */
+    .sanity-list {
+      margin: 1.5rem 0 1.8rem;
+      padding: 1.5rem 2rem;
+      background: rgba(139,0,0,0.05);
+      border-left: 3px solid var(--crimson);
+      list-style: none;
+    }
+
+    .sanity-list li {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .sanity-list li::before {
+      content: '▸';
+      color: var(--crimson-bright);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* ─── FINAL SCORE ─────────────────────────────────────── */
+    .final-score-section {
+      margin: 4rem 0 2rem;
+      position: relative;
+      text-align: center;
+    }
+
+    .final-score-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .final-score-label::before,
+    .final-score-label::after {
+      content: '';
+      width: 3rem;
+      height: 1px;
+      background: var(--border-bright);
+    }
+
+    .score-reveal {
+      position: relative;
+      display: inline-block;
+    }
+
+    .score-big {
+      font-family: 'Playfair Display', serif;
+      font-size: 11rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--crimson-bright);
+      letter-spacing: -0.04em;
+      text-shadow:
+        0 0 80px rgba(212,35,58,0.6),
+        0 0 160px rgba(212,35,58,0.25),
+        0 0 300px rgba(139,0,0,0.15);
+      animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .score-denom {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      vertical-align: super;
+      line-height: 1;
+    }
+
+    .score-verdict-word {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1);   filter: blur(0); }
+    }
+
+    /* Score glow rings */
+    .score-reveal::before {
+      content: '';
+      position: absolute;
+      inset: -3rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,35,58,0.18) 0%, transparent 70%);
+      animation: blobPulse 4s ease-in-out infinite;
+    }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────── */
+    .article-sidebar {
+      position: sticky;
+      top: 7rem;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+
+    .sidebar-card-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-score {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .sidebar-score-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--crimson-bright);
+      line-height: 1;
+      text-shadow: 0 0 40px var(--crimson-glow);
+    }
+
+    .sidebar-score-denom {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--text-faint);
+    }
+
+    .sidebar-score-verdict {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      margin-top: 0.4rem;
+    }
+
+    .sidebar-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .sidebar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .sidebar-row-key {
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .sidebar-row-val {
+      color: var(--text);
+      text-align: right;
+      max-width: 55%;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .toc-list a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+      padding: 0.3rem 0;
+    }
+
+    .toc-list a:hover { color: var(--crimson-bright); }
+
+    .toc-list a::before {
+      content: '';
+      width: 1rem;
+      height: 1px;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text-faint);
+    }
+
+    footer .footer-logo span { color: var(--crimson); }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--text-faint);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <!-- Article Hero -->
+  <div class="article-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="game-reviews.html">Game Reviews</a>
+      <span class="sep">/</span>
+      <span>Dredge</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Game Review</span>
+      <span class="tag">Indie</span>
+      <span class="tag">Horror</span>
+      <span class="tag">Fishing</span>
+      <span class="tag-neutral tag">PC &bull; PS5 &bull; Xbox &bull; Switch</span>
+    </div>
+    <h1 class="article-title">The Best Fishing Horror Game Out There</h1>
+    <p class="article-opening">
+      Dredge is the rare game that earns the word <em>uncanny</em> - a fishing trip that quietly, deliberately, becomes something far more sinister than you signed up for.
+    </p>
+    <div class="article-meta-bar">
+      <div class="meta-item"><div class="meta-dot"></div><span>Black Salt Games</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>Indie / Cosmic Horror</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>PC / PS5 / Xbox / Switch</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>~20 min read</span></div>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <span class="disclaimer-icon">ℹ</span>
+    <span>This review covers the <strong>main game only</strong>. For DLC content, see the Complete Edition review - <a href="#">click here</a>.</span>
+  </div>
+
+  <!-- Stats Block -->
+  <div class="stats-block">
+    <div class="stats-header">
+      <span class="stats-header-title">By the Numbers</span>
+      <div class="stats-header-line"></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-num">88</div>
+        <div class="stat-name">Fish<br/>Species</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">110</div>
+        <div class="stat-name">Aberrations<br/>to Discover</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">16</div>
+        <div class="stat-name">Fishing<br/>Rods</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">24</div>
+        <div class="stat-name">Unique<br/>NPCs</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">26</div>
+        <div class="stat-name">Quests<br/>Available</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">5</div>
+        <div class="stat-name">Distinct<br/>Regions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article Body + Sidebar -->
+  <div class="article-layout">
+    <article class="article-body">
+
+      <p>
+        Dredge, by <strong>Black Salt Games</strong>, is a modern masterpiece. It has a unique art style, a dark and layered story, and a generous pinch of cosmic horror holding everything together. You play as the Angler - catching fish, avoiding the horrors of the night, and collecting ruins for a mysterious, unsettling someone who has taken a peculiar interest in you.
+      </p>
+
+      <p>
+        It is an amazing game with simple but fleshed-out mechanics, and an alive, interactive world populated by 24 unique characters across five very different regions. Every single one of them has something to say - and more often than not, something strange to ask of you.
+      </p>
+
+      <h2 id="world">A World Full of Stories</h2>
+
+      <p>
+        In Dredge, you will meet many characters. Some will need you to catch fish and let them rot to prove a point. Others will ask you to serve as bait to lure out and destroy a sea monster. It is never a boring or drawn-out moment - the game is generous with its ideas and stingy with padding, which is precisely why it works so well.
+      </p>
+
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmYaFKz09_-bPut4fG6FYaF8_pYYHGVBekAg&s" alt="Dredge gameplay screenshot" class="article-image" />
+      <div class="article-image-caption">The world of Dredge - beautiful on the surface, deeply unsettling beneath.</div>
+
+      <h2 id="mechanics">Sanity, Darkness & the Deep</h2>
+
+      <p>
+        The main mechanic Dredge builds itself around is <strong>sanity</strong>. As you use your cursed abilities and spend time in darkness - out at sea after dusk - you will lose your grip on reality, and things will begin to happen. Things you cannot fully explain.
+      </p>
+
+      <ul class="sanity-list">
+        <li>Your lights go out, leaving you in blind darkness</li>
+        <li>Rocks turn invisible, the sea a silent minefield</li>
+        <li>A plague infests your cargo overnight</li>
+        <li>Birds descend and steal fish straight from your hold</li>
+        <li>Something in the water finds your boat - and eats it</li>
+      </ul>
+
+      <p>
+        As you go insane, things come to get you. Dredge never screams this at you with jump scares or scripted chases - instead, it lets dread do the work. The atmosphere is oppressive in the best possible way, and the game is extraordinarily disciplined about letting your imagination fill the gaps it leaves open.
+      </p>
+
+      <h2 id="fishing">The Joy of Fishing</h2>
+
+      <p>
+        Setting horror aside, the fishing itself is genuinely, surprisingly fun. There are many types of fishing minigames, each with their own requirements and rhythms - different rods unlock access to different species, and no two catches feel entirely the same. Then there is the <strong>inventory system</strong>, which deserves special mention.
+      </p>
+
+      <p>
+        Every item and piece of equipment takes up a specific shape in your boat's cargo grid. It is a puzzle game hiding inside a fishing game. Fish have impractical, awkward shapes. Equipment must occupy specific slots to function. For most of the game, space is the most precious resource you have - more limiting than money, more limiting than time.
+      </p>
+
+      <p>
+        The controls are best with a controller, but a keyboard works fine. Moving your boat feels so fluid and natural that returning to other games afterwards feels uncomfortably bulky - Dredge's navigation is one of those invisible design decisions you only notice once it's gone.
+      </p>
+
+      <h2 id="story">The Story - Where Dredge Truly Excels</h2>
+
+      <p>
+        Arguably the thing Dredge does best is its storytelling. You begin the game looking for a new position as an Angler, crash landing at the shores of a lighthouse. The town takes you in, hands you an old boat, and asks that you work off the cost. A simple, grounded start.
+      </p>
+
+      <p>
+        Not long after you set out, you will catch an aberration - a mutated, wrong-looking fish that has no business existing. When you sell it, you will meet someone you do not yet know is a <strong>manifestation of your guilt</strong>. This person - The Collector - gives you dredging equipment and asks just one thing in return: find five artifacts scattered across all 5 regions, and bring them to him. Each artefact grants you a new power. You accept, because what else would you do?
+      </p>
+
+      <p>
+        The five regions each carry their own stories, told through characters and environments rather than cutscenes or text walls. And when you have visited them all, collected everything The Collector asked for - it is time to face the truth.
+      </p>
+
+      <!-- Spoiler Warning -->
+      <div class="spoiler-warning">
+        <div class="spoiler-warning-inner">
+          <div class="spoiler-top-bar">
+            <span class="spoiler-skull">☠</span>
+            <span class="spoiler-top-label">Spoiler Warning</span>
+          </div>
+          <div class="spoiler-content">
+            <div class="spoiler-glow"></div>
+            <div class="spoiler-main-text">Major Story Spoilers Ahead</div>
+            <div class="spoiler-sub-text">The following sections discuss both endings in full detail &mdash; scroll past to skip</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bad Ending -->
+      <div class="ending-header">
+        <div class="ending-badge">
+          <div class="ending-icon bad">💀</div>
+          <div class="ending-label-wrap">
+            <div class="ending-eyebrow bad">Ending One</div>
+            <div class="ending-title bad">The Bad Ending</div>
+          </div>
+        </div>
+        <div class="ending-rule bad"></div>
+      </div>
+
+      <p>
+        You travel with The Collector towards the open ocean. Following his instructions, you throw the five artefacts and a scarlet book into the sea - and out of the water, rising slowly through the dark, comes your dead wife.
+      </p>
+
+      <p>
+        The end of the world has begun. An eldritch horror awakens. Your main hub - the town that gave you shelter, the people who trusted you - burns while the credits roll. You got what you came for. It cost everyone else everything.
+      </p>
+
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR38sz6IBtZz0WR6OQ0kZupQPR9APihe7Q2sw&s" alt="Dredge bad ending" class="article-image" />
+      <div class="article-image-caption">The cost of unchecked grief - the bad ending is harrowing in its quiet devastation.</div>
+
+      <!-- Good Ending -->
+      <div class="ending-header">
+        <div class="ending-badge">
+          <div class="ending-icon good">🕯</div>
+          <div class="ending-label-wrap">
+            <div class="ending-eyebrow good">Ending Two</div>
+            <div class="ending-title good">The Good Ending</div>
+          </div>
+        </div>
+        <div class="ending-rule good"></div>
+      </div>
+
+      <p>
+        If you pay attention to the NPCs and the stories the world quietly tells you, you will have heard of an old mayor who one day simply went mad. If you find this old mayor and listen - really listen - you may find within yourself the ability to let go.
+      </p>
+
+      <p>
+        Returning to The Collector's manor, you punch him in the face. He shatters, leaving behind nothing but broken glass from a mirror - because that is all he ever was. A reflection. Your own guilt, given form.
+      </p>
+
+      <p>
+        Go to the lighthouse keeper - the same one at the lighthouse you crashed into at the very start of the game, all those hours ago. Ask for her help. Follow her light out into the open sea. Throw the scarlet book into the ocean, its rituals unperformed, its power spent. And then let the abominations of the deep take you. You are sacrificing yourself to spare everyone else from the weight of what you nearly did.
+      </p>
+
+      <p>
+        It is one of the most quietly devastating endings I have experienced in years. The game never raises its voice.
+      </p>
+
+      <h2 id="verdict">Final Thoughts</h2>
+
+      <p>
+        Dredge is a shortish game - eight to twelve hours on a casual playthrough - but not a single one of those hours is wasted. There is no waiting, no filler, no moment where you are simply passing time. There is always something to do, always something to discover, and if you want to go further, a full 100% completion run offers plenty of reason to stay.
+      </p>
+
+      <p>
+        The art style is beautiful in its simplicity. The gameplay is basic but never grows repetitive. The cover art is designed to resemble an oil painting, which tells you everything about the care behind this project. I would recommend Dredge to people who do not even like horror - because Dredge is not about horror in the way most games are. There are no jump scares. No scripted chases. Just <strong>atmosphere</strong>, and the creeping, earned dread of a world that is watching you from below.
+      </p>
+
+      <!-- Final Score -->
+      <div class="final-score-section">
+        <div class="final-score-label">Final Verdict</div>
+        <div class="score-reveal">
+          <div class="score-big">9<span class="score-denom">/10</span></div>
+        </div>
+        <div class="score-verdict-word">Exceptional</div>
+      </div>
+
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="article-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Score</div>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num">9<span class="sidebar-score-denom">/10</span></div>
+          <div class="sidebar-score-verdict">Exceptional</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Game Details</div>
+        <div class="sidebar-detail">
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Developer</span>
+            <span class="sidebar-row-val">Black Salt Games</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Genre</span>
+            <span class="sidebar-row-val">Indie / Horror</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Platforms</span>
+            <span class="sidebar-row-val">PC, PS5, Xbox, Switch</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Playtime</span>
+            <span class="sidebar-row-val">8–12 hrs (casual)</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Jump Scares</span>
+            <span class="sidebar-row-val">None</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Scripted Chases</span>
+            <span class="sidebar-row-val">None</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#world">A World Full of Stories</a></li>
+          <li><a href="#mechanics">Sanity, Darkness &amp; the Deep</a></li>
+          <li><a href="#fishing">The Joy of Fishing</a></li>
+          <li><a href="#story">The Story</a></li>
+          <li><a href="#verdict">Final Thoughts</a></li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews &mdash; All opinions are my own.</p>
+  </footer>
+
+</body>
+</html>

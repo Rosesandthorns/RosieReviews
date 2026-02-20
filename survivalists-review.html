@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Survivalists Review - Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #080709;
+      --bg-2:          #0e0b0c;
+      --text:          #f2e8e8;
+      --text-muted:    #9a7e80;
+      --text-faint:    #4a3535;
+      --border:        rgba(139, 0, 0, 0.25);
+      --border-bright: rgba(212, 35, 58, 0.5);
+      --amber:         #b87820;
+      --amber-glow:    rgba(184, 120, 32, 0.3);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* --- BG BLOBS ----------------------------------------- */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 {
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, #2a1800 0%, transparent 70%);
+      top: -120px; right: -100px;
+      --dur: 10s; --delay: 0s;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #8B0000 0%, transparent 70%);
+      bottom: 0; left: -80px;
+      --dur: 8s; --delay: -5s;
+    }
+    .blob-3 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, #1e1000 0%, transparent 70%);
+      top: 55%; right: 25%;
+      --dur: 13s; --delay: -3s;
+    }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.1); }
+    }
+
+    /* --- NAV --------------------------------------------- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,7,9,0.97), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--crimson-bright); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 100%;
+      height: 1px;
+      background: var(--crimson-bright);
+      transition: right 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* --- ARTICLE HERO ------------------------------------ */
+    .article-hero {
+      position: relative;
+      z-index: 1;
+      padding: 9rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .breadcrumb a {
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumb a:hover { color: var(--crimson-bright); }
+    .breadcrumb .sep { opacity: 0.4; }
+
+    .article-tags {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--crimson-bright);
+      border: 1px solid var(--crimson);
+      padding: 0.2rem 0.6rem;
+    }
+
+    .tag-neutral {
+      color: var(--text-faint);
+      border-color: var(--border);
+    }
+
+    .article-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      max-width: 900px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .article-opening {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.55;
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--crimson);
+      padding-left: 1.5rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .article-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      flex-wrap: wrap;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--crimson); flex-shrink: 0; }
+
+    /* --- ARTICLE LAYOUT ---------------------------------- */
+    .article-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 4rem;
+      padding: 4rem 4rem 6rem;
+      max-width: 1400px;
+    }
+
+    .article-body { min-width: 0; }
+
+    .article-body p {
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text-muted);
+      margin-bottom: 1.6rem;
+    }
+
+    .article-body p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .article-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 3rem 0 1.2rem;
+      line-height: 1.15;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* --- ISLAND HAZARDS LIST ----------------------------- */
+    .hazard-list {
+      margin: 1.5rem 0 1.8rem;
+      padding: 1.5rem 2rem;
+      background: rgba(139,0,0,0.05);
+      border-left: 3px solid var(--amber);
+      list-style: none;
+    }
+
+    .hazard-list li {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .hazard-list li::before {
+      content: '▸';
+      color: var(--amber);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* --- VERDICT CALLOUT --------------------------------- */
+    .then-vs-now {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+      margin: 2.5rem 0;
+    }
+
+    .tn-panel {
+      padding: 2rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tn-panel.then::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 0% 0%, rgba(74,171,120,0.08) 0%, transparent 60%);
+    }
+
+    .tn-panel.now::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 100% 0%, rgba(139,0,0,0.1) 0%, transparent 60%);
+    }
+
+    .tn-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tn-label.then { color: #4aaa78; }
+    .tn-label.now  { color: var(--crimson-bright); }
+
+    .tn-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      position: relative;
+    }
+
+    .tn-body {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      position: relative;
+    }
+
+    /* --- INLINE CALLOUT ---------------------------------- */
+    .callout {
+      margin: 2rem 0;
+      padding: 1.5rem 2rem;
+      background: rgba(184,120,32,0.07);
+      border: 1px solid rgba(184,120,32,0.3);
+      border-left: 3px solid var(--amber);
+      position: relative;
+    }
+
+    .callout-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.6rem;
+    }
+
+    .callout p {
+      font-size: 1.1rem !important;
+      margin-bottom: 0 !important;
+      color: var(--text-muted);
+    }
+
+    /* --- FINAL SCORE ------------------------------------- */
+    .final-score-section {
+      margin: 4rem 0 2rem;
+      position: relative;
+      text-align: center;
+    }
+
+    .final-score-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .final-score-label::before,
+    .final-score-label::after {
+      content: '';
+      width: 3rem;
+      height: 1px;
+      background: var(--border-bright);
+    }
+
+    .score-reveal {
+      position: relative;
+      display: inline-block;
+    }
+
+    .score-big {
+      font-family: 'Playfair Display', serif;
+      font-size: 11rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--amber);
+      letter-spacing: -0.04em;
+      text-shadow:
+        0 0 80px rgba(184,120,32,0.6),
+        0 0 160px rgba(184,120,32,0.25),
+        0 0 300px rgba(184,120,32,0.1);
+      animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .score-denom {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      vertical-align: super;
+      line-height: 1;
+    }
+
+    .score-verdict-word {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .score-reveal::before {
+      content: '';
+      position: absolute;
+      inset: -3rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,120,32,0.15) 0%, transparent 70%);
+      animation: blobPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1);   filter: blur(0); }
+    }
+
+    /* --- SIDEBAR ----------------------------------------- */
+    .article-sidebar {
+      position: sticky;
+      top: 7rem;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+
+    .sidebar-card-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-score {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .sidebar-score-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--amber);
+      line-height: 1;
+      text-shadow: 0 0 40px var(--amber-glow);
+    }
+
+    .sidebar-score-denom {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--text-faint);
+    }
+
+    .sidebar-score-verdict {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-top: 0.4rem;
+    }
+
+    .sidebar-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .sidebar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .sidebar-row-key {
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .sidebar-row-val {
+      color: var(--text);
+      text-align: right;
+      max-width: 55%;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .toc-list a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+      padding: 0.3rem 0;
+    }
+
+    .toc-list a:hover { color: var(--crimson-bright); }
+
+    .toc-list a::before {
+      content: '';
+      width: 1rem;
+      height: 1px;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* --- FOOTER ------------------------------------------ */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text-faint);
+    }
+
+    footer .footer-logo span { color: var(--crimson); }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--text-faint);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <!-- Article Hero -->
+  <div class="article-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="game-reviews.html">Game Reviews</a>
+      <span class="sep">/</span>
+      <span>The Survivalists</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Game Review</span>
+      <span class="tag">Indie</span>
+      <span class="tag">Survival</span>
+      <span class="tag">Co-op</span>
+      <span class="tag-neutral tag">PC &bull; PS4 &bull; Xbox &bull; Switch</span>
+    </div>
+    <h1 class="article-title">A Game at War With Itself</h1>
+    <p class="article-opening">
+      The Survivalists is still a good game - it is just no longer the game it used to be, and that gap matters more than you might expect.
+    </p>
+    <div class="article-meta-bar">
+      <div class="meta-item"><div class="meta-dot"></div><span>Team17</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>Survival / Sandbox</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>PC / PS4 / Xbox / Switch</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>~15 min read</span></div>
+    </div>
+  </div>
+
+  <!-- Article Body + Sidebar -->
+  <div class="article-layout">
+    <article class="article-body">
+
+      <p>
+        I have been following The Survivalists since it launched in 2020. I have 100% completed it more than once. I have watched it grow, watched it change, and watched it become something I have complicated feelings about. It is not a hard game - not even close - and it is not a perfect one either. But for a long time it was a very, very good one.
+      </p>
+
+      <p>
+        Developed by <strong>Team17</strong>, The Survivalists is a survival sandbox game built on a simple and satisfying loop. Every run generates a completely random seed and map, which gives it genuine replayability - you are never navigating the same island twice. What stays constant is the premise, and that premise is a good one.
+      </p>
+
+      <h2 id="core">What the Game Is</h2>
+
+      <p>
+        You wash up on shore with nothing, and your goal is to escape the region. To do that, you need to build, craft, cook, farm, and explore - and crucially, you do not do it alone. The Survivalists hands you <strong>monkeys</strong>, which you can train to automate almost any task you can perform yourself. Farming, digging, crafting, cooking, building - once a monkey has watched you do something, they will do it for you. It is a clever, tactile little system that sets the game apart from everything else in the genre.
+      </p>
+
+      <p>
+        The crafting tree drives your progression naturally outward. As you advance, you will find you need resources that simply are not available on your starting island - which means venturing out to other, more dangerous places.
+      </p>
+
+      <ul class="hazard-list">
+        <li>Some islands bake you alive with deadly heat</li>
+        <li>Some are overrun with carnivorous plants that do not take kindly to visitors</li>
+        <li>Others have something as deceptively simple as mosquitoes - and they are a genuine nuisance</li>
+      </ul>
+
+      <p>
+        The ultimate goal is to gather an enormous amount of resources and rebuild a large boat - and along the way, complete four temples that gate your progress. It is a clean, well-paced structure. Or at least, it used to be.
+      </p>
+
+      <h2 id="update">What the Exploration Update Changed</h2>
+
+      <p>
+        This is where it gets difficult to talk about, because I genuinely love this game. But the exploration update overhauled The Survivalists so dramatically that it no longer feels like the same thing. The word I keep coming back to is <strong>bloated</strong>.
+      </p>
+
+      <div class="then-vs-now">
+        <div class="tn-panel then">
+          <div class="tn-label then">Before the Update</div>
+          <div class="tn-title">Elemental Tools - Earned Naturally</div>
+          <div class="tn-body">There were 8 elemental tools, and you earned them organically - one per temple, four per save. They were a reward that felt proportionate to the effort of reaching them.</div>
+        </div>
+        <div class="tn-panel now">
+          <div class="tn-label now">After the Update</div>
+          <div class="tn-title">Elemental Tools - Buried in Quest Chains</div>
+          <div class="tn-body">Now they are locked behind lengthy quest chains for four quest-giver NPCs. On a casual playthrough, most players will not bother - and honestly, who can blame them?</div>
+        </div>
+      </div>
+
+      <p>
+        The quest givers are, to put it plainly, not fun. They are tedious. I have not seen a single person genuinely enjoy them. The tasks they assign are repetitive, the payoff rarely justifies the time investment, and the whole system reads like an attempt to get players engaging with a mechanic that - left to their own devices - they would sensibly ignore. Which is exactly what most of them do.
+      </p>
+
+      <div class="callout">
+        <div class="callout-label">Worth noting</div>
+        <p>There is also a strict cap on how many of each item or structure you can have placed at once. In a normal playthrough you will never hit it - but if you are hoping to build a sprawling long-term base after finishing the game, you cannot. There is no long-term world. You restart. Every time.</p>
+      </div>
+
+      <p>
+        Mechanics that once shaped the early game have been pushed back behind more complicated systems - systems you can comfortably ignore entirely on a standard run. The game has more content now than it ever has. Almost none of it feels necessary.
+      </p>
+
+      <p>
+        And again - this is not a challenging game. The puzzles it does have are not puzzles in any meaningful sense. Most of them amount to standing on a specific spot and using a specific emote. That was always true, but in the original version the pacing and structure disguised it well. Now, stripped of that structure, it is more visible.
+      </p>
+
+      <h2 id="still-good">What Has Not Changed</h2>
+
+      <p>
+        Here is the thing, though: the core is still there. The monkey automation system is still delightful. The randomised world still generates interesting problems to solve. The crafting loop still pulls you forward. The game is still, at its heart, a good time.
+      </p>
+
+      <p>
+        With friends, The Survivalists is a genuinely fun eight to ten hours - a full playthrough from washed ashore to sailing away, with enough happening to keep everyone busy and enough to talk about to make the journey feel shared. Solo, on the newest version, expect closer to twenty to twenty-five hours on a first run. Either way, it is time I would not consider wasted.
+      </p>
+
+      <p>
+        I love The Survivalists. I say that clearly, because I want the criticism to land with the weight it deserves rather than reading as dismissal. The modern version is not the best version of this game. But it is still the same game underneath all the additions - and the same game is still quite worth playing.
+      </p>
+
+      <!-- Final Score -->
+      <div class="final-score-section">
+        <div class="final-score-label">Final Verdict</div>
+        <div class="score-reveal">
+          <div class="score-big">7<span class="score-denom">/10</span></div>
+        </div>
+        <div class="score-verdict-word">Good</div>
+      </div>
+
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="article-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Score</div>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num">7<span class="sidebar-score-denom">/10</span></div>
+          <div class="sidebar-score-verdict">Good</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Game Details</div>
+        <div class="sidebar-detail">
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Developer</span>
+            <span class="sidebar-row-val">Team17</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Genre</span>
+            <span class="sidebar-row-val">Survival / Sandbox</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Platforms</span>
+            <span class="sidebar-row-val">PC, PS4, Xbox, Switch</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Solo Playtime</span>
+            <span class="sidebar-row-val">20-25 hrs (first run)</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Co-op Playtime</span>
+            <span class="sidebar-row-val">8-10 hrs</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Difficulty</span>
+            <span class="sidebar-row-val">Not challenging</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Best Played</span>
+            <span class="sidebar-row-val">With friends</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#core">What the Game Is</a></li>
+          <li><a href="#update">What the Update Changed</a></li>
+          <li><a href="#still-good">What Has Not Changed</a></li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews - All opinions are my own.</p>
+  </footer>
+
+</body>
+</html>

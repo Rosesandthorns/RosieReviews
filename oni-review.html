@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oxygen Not Included Review - Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #080709;
+      --bg-2:          #0e0b0c;
+      --text:          #f2e8e8;
+      --text-muted:    #9a7e80;
+      --text-faint:    #4a3535;
+      --border:        rgba(139, 0, 0, 0.25);
+      --border-bright: rgba(212, 35, 58, 0.5);
+      --oni-green:     #2a7a4a;
+      --oni-green-bright: #3daa68;
+      --oni-green-glow: rgba(61, 170, 104, 0.3);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute; border-radius: 50%; filter: blur(90px);
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 { width: 600px; height: 600px; background: radial-gradient(circle, #0d2e1a 0%, transparent 70%); top: -150px; left: -100px; --dur: 11s; --delay: 0s; }
+    .blob-2 { width: 400px; height: 400px; background: radial-gradient(circle, #8B0000 0%, transparent 70%); bottom: 100px; right: -80px; --dur: 9s; --delay: -5s; }
+    .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #0a2010 0%, transparent 70%); top: 50%; right: 20%; --dur: 13s; --delay: -3s; }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.1); }
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,7,9,0.97), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--crimson-bright); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.25s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--crimson-bright); transition: right 0.3s ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* --- HERO -------------------------------------------- */
+    .article-hero {
+      position: relative; z-index: 1;
+      padding: 9rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
+    .breadcrumb a { color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--crimson-bright); }
+    .breadcrumb .sep { opacity: 0.4; }
+
+    .article-tags { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--crimson-bright); border: 1px solid var(--crimson); padding: 0.2rem 0.6rem; }
+    .tag-neutral { color: var(--text-faint); border-color: var(--border); }
+    .tag-green { color: var(--oni-green-bright); border-color: var(--oni-green); }
+
+    .article-title { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1rem; max-width: 900px; animation: fadeUp 0.7s ease both; }
+
+    .article-opening { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic; color: var(--text-muted); max-width: 720px; line-height: 1.55; margin-bottom: 2rem; border-left: 3px solid var(--oni-green); padding-left: 1.5rem; animation: fadeUp 0.7s 0.1s ease both; }
+
+    .article-meta-bar { display: flex; align-items: center; gap: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--oni-green); flex-shrink: 0; }
+
+    /* --- DISCLAIMER -------------------------------------- */
+    .disclaimer {
+      position: relative; z-index: 1;
+      margin: 0 4rem;
+      padding: 1rem 1.5rem;
+      background: rgba(42, 122, 74, 0.07);
+      border: 1px solid rgba(42, 122, 74, 0.3);
+      border-left: 3px solid var(--oni-green);
+      display: flex; align-items: center; gap: 1rem;
+      font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--text-muted);
+    }
+    .disclaimer a { color: var(--oni-green-bright); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* --- ARTICLE LAYOUT ---------------------------------- */
+    .article-layout { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 280px; gap: 4rem; padding: 4rem 4rem 6rem; max-width: 1400px; }
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.2rem; line-height: 1.85; color: var(--text-muted); margin-bottom: 1.6rem; }
+    .article-body p strong { color: var(--text); font-weight: 600; }
+
+    .article-body h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text); margin: 3rem 0 1.2rem; line-height: 1.15; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+
+    /* --- HERO IMAGE -------------------------------------- */
+    .article-image { width: 100%; border: 1px solid var(--border); display: block; margin: 2rem 0; object-fit: cover; }
+    .article-image-caption { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--text-faint); text-align: center; margin-top: -1.5rem; margin-bottom: 2rem; padding: 0.5rem; border: 1px solid var(--border); border-top: none; }
+
+    /* --- SIMULATION LAYERS ------------------------------- */
+    .sim-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
+      margin: 2rem 0;
+    }
+
+    .sim-cell {
+      background: var(--bg-2); border: 1px solid var(--border);
+      padding: 1.5rem; text-align: center;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative; overflow: hidden;
+    }
+
+    .sim-cell:hover { border-color: rgba(42,122,74,0.5); background: #0d120e; }
+
+    .sim-cell::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(42,122,74,0.08) 0%, transparent 70%);
+    }
+
+    .sim-icon { font-size: 1.8rem; margin-bottom: 0.6rem; position: relative; }
+    .sim-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; position: relative; }
+    .sim-desc { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--text-faint); position: relative; }
+
+    /* --- GOAL CARDS -------------------------------------- */
+    .goal-card {
+      margin: 2rem 0;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .goal-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(to bottom, var(--oni-green-bright), transparent);
+    }
+
+    .goal-header {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 1.2rem 1.5rem 1.2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(42,122,74,0.04);
+    }
+
+    .goal-num {
+      font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+      color: var(--oni-green); line-height: 1; flex-shrink: 0;
+      text-shadow: 0 0 30px var(--oni-green-glow);
+    }
+
+    .goal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+
+    .goal-body { padding: 1.5rem 1.5rem 1.5rem 2rem; }
+    .goal-body p { font-size: 1.1rem; margin-bottom: 1rem; }
+    .goal-body p:last-child { margin-bottom: 0; }
+
+    /* --- WARNING CALLOUT --------------------------------- */
+    .warning-callout {
+      margin: 2.5rem 0;
+      padding: 1.8rem 2rem;
+      background: rgba(139,0,0,0.06);
+      border: 1px solid rgba(139,0,0,0.3);
+      border-left: 3px solid var(--crimson-bright);
+      position: relative; overflow: hidden;
+    }
+
+    .warning-callout::before {
+      content: '⚠'; position: absolute; right: 1.5rem; top: 1.2rem;
+      font-size: 2rem; opacity: 0.08;
+    }
+
+    .warning-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--crimson-bright); margin-bottom: 0.6rem; }
+    .warning-callout p { font-size: 1.1rem !important; margin-bottom: 0 !important; }
+
+    /* --- MURPHY'S LAW LIST ------------------------------- */
+    .murphy-list { margin: 1.5rem 0; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .murphy-list li { font-family: 'Crimson Pro', Georgia, serif; font-size: 1.1rem; color: var(--text-muted); padding: 0.6rem 1rem; background: rgba(139,0,0,0.04); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+    .murphy-list li::before { content: '✕'; color: var(--crimson-bright); font-size: 0.7rem; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+    /* --- FINAL SCORE ------------------------------------- */
+    .final-score-section { margin: 4rem 0 2rem; position: relative; text-align: center; }
+
+    .final-score-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .final-score-label::before, .final-score-label::after { content: ''; width: 3rem; height: 1px; background: rgba(42,122,74,0.4); }
+
+    .score-reveal { position: relative; display: inline-block; }
+
+    .score-big { font-family: 'Playfair Display', serif; font-size: 11rem; font-weight: 900; line-height: 1; color: var(--oni-green-bright); letter-spacing: -0.04em; text-shadow: 0 0 80px rgba(61,170,104,0.6), 0 0 160px rgba(61,170,104,0.25); animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .score-denom { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 400; color: var(--text-faint); vertical-align: super; line-height: 1; }
+    .score-verdict-word { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; letter-spacing: 0.05em; }
+
+    .score-reveal::before { content: ''; position: absolute; inset: -3rem; border-radius: 50%; background: radial-gradient(circle, rgba(61,170,104,0.15) 0%, transparent 70%); animation: blobPulse 4s ease-in-out infinite; }
+
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    /* --- SIDEBAR ----------------------------------------- */
+    .article-sidebar { position: sticky; top: 7rem; align-self: start; display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar-card { background: var(--bg-2); border: 1px solid var(--border); padding: 1.5rem; }
+    .sidebar-card-title { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .sidebar-score { text-align: center; padding: 1rem 0; }
+    .sidebar-score-num { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900; color: var(--oni-green-bright); line-height: 1; text-shadow: 0 0 40px var(--oni-green-glow); }
+    .sidebar-score-denom { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-faint); }
+    .sidebar-score-verdict { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--oni-green-bright); margin-top: 0.4rem; }
+    .sidebar-detail { display: flex; flex-direction: column; gap: 0.7rem; }
+    .sidebar-row { display: flex; justify-content: space-between; align-items: baseline; font-family: 'DM Mono', monospace; font-size: 0.62rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+    .sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sidebar-row-key { letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+    .sidebar-row-val { color: var(--text); text-align: right; max-width: 55%; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .toc-list a { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-faint); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s; padding: 0.3rem 0; }
+    .toc-list a:hover { color: var(--oni-green-bright); }
+    .toc-list a::before { content: ''; width: 1rem; height: 1px; background: currentColor; flex-shrink: 0; }
+
+    .sidebar-link { display: block; background: rgba(42,122,74,0.08); border: 1px solid rgba(42,122,74,0.3); padding: 1.2rem; text-decoration: none; transition: background 0.25s, border-color 0.25s; }
+    .sidebar-link:hover { background: rgba(42,122,74,0.14); border-color: var(--oni-green); }
+    .sidebar-link-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--oni-green-bright); margin-bottom: 0.4rem; }
+    .sidebar-link-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; }
+    footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; color: var(--text-faint); }
+    footer .footer-logo span { color: var(--crimson); }
+    footer p { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-faint); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <div class="article-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="game-reviews.html">Game Reviews</a>
+      <span class="sep">/</span>
+      <span>Oxygen Not Included</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Game Review</span>
+      <span class="tag">Colony Sim</span>
+      <span class="tag">Strategy</span>
+      <span class="tag-green tag">Spaced Out! Edition</span>
+      <span class="tag-neutral tag">PC</span>
+    </div>
+    <h1 class="article-title">Arguably the Best Designed Game of All Time</h1>
+    <p class="article-opening">
+      Oxygen Not Included is complicated, punishing, and completely fair. It is my favourite game. It may be the only game I have ever played that genuinely earns a perfect score.
+    </p>
+    <div class="article-meta-bar">
+      <div class="meta-item"><div class="meta-dot"></div><span>Klei Entertainment</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>Colony Sim / Strategy</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>PC</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>~20 min read</span></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <span>ℹ</span>
+    <span>This review covers <strong>Spaced Out!</strong> and the base game only. DLC content is covered separately - <a href="oni-complete-review.html">read the Complete Edition review here</a>.</span>
+  </div>
+
+  <div class="article-layout">
+    <article class="article-body">
+
+      <p>
+        Oxygen Not Included, designed by <strong>Klei Entertainment</strong>, is one of - if not outright - my favourite game of all time. Above any other game I have played, it is the one title I believe deserves a perfect score. It is arguably the best designed game ever made: complicated but fair, deep but legible, and almost perversely committed to ensuring you are on first-name terms with Murphy's Law before you finish your first colony.
+      </p>
+
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/457140/capsule_616x353.jpg?t=1766014410" alt="Oxygen Not Included" class="article-image" />
+      <div class="article-image-caption">Oxygen Not Included - a 2D colony sim that will make even the most powerful computers think very hard indeed.</div>
+
+      <p>
+        It is also a 2D colony sim that will make even the highest-end computers feel like a potato-powered clock - and that is meant as a compliment of the highest order.
+      </p>
+
+      <h2 id="simulation">A Living, Breathing Simulation</h2>
+
+      <p>
+        Oxygen Not Included runs <strong>many, many layers of simulation simultaneously</strong>. Every tile in your colony is being calculated constantly - temperature, gas composition, pressure, light, decoration. Every single one. Per second. The result is the most realistic colony simulator that operates at this level of complexity, and it is genuinely remarkable that it works as well as it does.
+      </p>
+
+      <div class="sim-grid">
+        <div class="sim-cell">
+          <div class="sim-icon">🌡️</div>
+          <div class="sim-name">Temperature</div>
+          <div class="sim-desc">Every tile, every material, every creature - simulated and spreading</div>
+        </div>
+        <div class="sim-cell">
+          <div class="sim-icon">💨</div>
+          <div class="sim-name">Gas & Pressure</div>
+          <div class="sim-desc">Gasses move, mix, compress, and suffocate in real time</div>
+        </div>
+        <div class="sim-cell">
+          <div class="sim-icon">💧</div>
+          <div class="sim-name">Liquids</div>
+          <div class="sim-desc">Flow, pool, evaporate, and freeze depending on conditions</div>
+        </div>
+        <div class="sim-cell">
+          <div class="sim-icon">🎨</div>
+          <div class="sim-name">Decoration</div>
+          <div class="sim-desc">Affects dupe morale - ugly bases breed stressed dupes</div>
+        </div>
+        <div class="sim-cell">
+          <div class="sim-icon">💡</div>
+          <div class="sim-name">Light</div>
+          <div class="sim-desc">Influences morale, plant growth, and creature behaviour</div>
+        </div>
+        <div class="sim-cell">
+          <div class="sim-icon">☢️</div>
+          <div class="sim-name">Radiation</div>
+          <div class="sim-desc">Harms dupes, powers machines, and is needed to win</div>
+        </div>
+      </div>
+
+      <p>
+        Klei has continued updating the game for performance and for content consistently since launch. It is a live product in the truest sense - getting better with time rather than quietly drifting into abandonment.
+      </p>
+
+      <p>
+        This review covers the <strong>Spaced Out!</strong> version of the game. I have no direct experience with the original, but I have seen the differences - and I fully recommend Spaced Out! to anyone picking this up. It feels like the game the developers truly envisioned, but could not justify including at ONI's asking price at launch. It is what the base game was always becoming.
+      </p>
+
+      <h2 id="dupes">You Are the Printing Pod</h2>
+
+      <p>
+        In ONI, you play as the <strong>Printing Pod</strong> - a superintelligent AI tasked with managing a colony of duplicants. Dupes, for short. They are not superintelligent. They are, in fact, deeply committed to finding the most dangerous possible way to do any given task.
+      </p>
+
+      <p>
+        Dupes can follow your orders and execute complex chains of tasks. What they cannot do is exercise judgment. Given the opportunity, they will dive head-first into 1,800°C magma to retrieve a block of igneous rock, complain about irritated eyes on the way back, and promptly die. This is not a hypothetical. This will happen to you.
+      </p>
+
+      <h2 id="goals">The Three Goals</h2>
+
+      <div class="goal-card" id="goal-live">
+        <div class="goal-header">
+          <div class="goal-num">1</div>
+          <div class="goal-title">Live</div>
+        </div>
+        <div class="goal-body">
+          <p>This seems obvious. Your dupes will not make it obvious. At their core, dupes need two things: oxygen and food. But they also need low stress - and stressed dupes are a colony-ending problem. Ashkan having wet feet is not a minor inconvenience. Ashkan having wet feet will lead to Ashkan stress-eating the entire colony's food supply if left unaddressed.</p>
+          <p>Low stress requires nice working environments, sensible construction, an understanding of why hot magma in your living quarters is inadvisable, and - eventually - a permit to put magma in a very specific part of your base so you can use it to heat a steam turbine to cool the other half of it down. For each problem, there are multiple solutions. There is always more than one problem. A toilet requires an entire sewage treatment plant. That is just how things are here.</p>
+        </div>
+      </div>
+
+      <div class="goal-card" id="goal-escape">
+        <div class="goal-header">
+          <div class="goal-num">2</div>
+          <div class="goal-title">The Great Escape</div>
+        </div>
+        <div class="goal-body">
+          <p>The main ending. Live long enough to colonise every planetoid in your system, charge a peculiar-looking machine using radiation, and send one dupe through the Temporal Tear - never to be seen again. Credits roll. Your save file remains.</p>
+          <p>Space travel is genuinely difficult. You have almost no tiles to work with, and everything a dupe needs on a full-sized colony is needed in that claustrophobic tin can. But if you manage it - if you build your network of planetoid outposts, charge the Temporal Tear Opener, and stand before it with a dupe selected - congratulations. You may now choose who to sacrifice. Choose wisely, or don't. Either way, they are not coming back.</p>
+        </div>
+      </div>
+
+      <div class="goal-card" id="goal-sustain">
+        <div class="goal-header">
+          <div class="goal-num">3</div>
+          <div class="goal-title">Super Sustainable</div>
+        </div>
+        <div class="goal-body">
+          <p>To truly live forever, you need to become entirely self-sustaining. A skilled player can achieve this with relative ease. For many, it is the hardest thing the game asks of you.</p>
+          <p>The central question: how do you sustain an ever-growing colony inside a finite planetoid? The answer is that you do not, strictly speaking, follow the rules of physics. You bend them. You find systems that produce more usable energy or mass than they consume. You break thermodynamics, politely, and build a civilisation on the rubble. ONI quietly rewards players who understand that the laws of physics are, in its universe, more of a guideline.</p>
+        </div>
+      </div>
+
+      <h2 id="lore">The Hidden Depth</h2>
+
+      <p>
+        ONI is a surprisingly rich game beneath its systems. There is genuine <strong>hidden lore</strong> for those willing to look - scraps of story, environmental details, implications tucked into item descriptions and building names that hint at something larger. It is so well-buried that even the wiki has barely scratched the surface of it. If you like finding things that were not meant to be easy to find, ONI will reward you.
+      </p>
+
+      <h2 id="verdict">Final Thoughts</h2>
+
+      <p>
+        Oxygen Not Included is not for the faint of heart. If something can go wrong, it will go wrong. Pipes will burst. Your base will start melting. The greenhouse will wilt at the worst possible moment. The food supply will stop, inexplicably, just as you thought you had it sorted. ONI does not apologise for this. It just waits, patiently, for you to figure out why.
+      </p>
+
+      <div class="warning-callout">
+        <div class="warning-label">Be warned</div>
+        <p>ONI is a deeply demanding game. It will punish inattention, reward curiosity, and destroy colonies you spent thirty hours building - sometimes for reasons that will only make sense after you have already lost. It is magnificent. It is also genuinely not for everyone.</p>
+      </div>
+
+      <p>
+        I love it without reservation. As much as it has broken my colonies, frustrated my plans, and forced me to rebuild from near-nothing more times than I can count - I would not change a single system. Oxygen Not Included is the most complete, most considered, most brilliantly engineered game I have ever played. That is not a phrase I use lightly.
+      </p>
+
+      <ul class="murphy-list">
+        <li>Pipes will burst</li>
+        <li>Your base will start melting</li>
+        <li>The greenhouse will wilt</li>
+        <li>The food supply will inexplicably stop</li>
+        <li>A dupe will find the magma</li>
+      </ul>
+
+      <p>
+        And you will fix it. And then something else will go wrong. And you will fix that too. And somewhere in that loop - that endless, punishing, completely fair loop - is one of the greatest games ever made.
+      </p>
+
+      <div class="final-score-section">
+        <div class="final-score-label">Final Verdict</div>
+        <div class="score-reveal">
+          <div class="score-big">10<span class="score-denom">/10</span></div>
+        </div>
+        <div class="score-verdict-word">Masterpiece</div>
+      </div>
+
+    </article>
+
+    <aside class="article-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Score</div>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num">10<span class="sidebar-score-denom">/10</span></div>
+          <div class="sidebar-score-verdict">Masterpiece</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Game Details</div>
+        <div class="sidebar-detail">
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Developer</span>
+            <span class="sidebar-row-val">Klei Entertainment</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Genre</span>
+            <span class="sidebar-row-val">Colony Sim</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Platform</span>
+            <span class="sidebar-row-val">PC</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Edition</span>
+            <span class="sidebar-row-val">Spaced Out!</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Difficulty</span>
+            <span class="sidebar-row-val">Very High</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Active Updates</span>
+            <span class="sidebar-row-val">Yes</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="oni-complete-review.html" class="sidebar-link">
+        <div class="sidebar-link-label">Also Available</div>
+        <div class="sidebar-link-title">ONI: Complete Edition Review - includes all DLC &rarr;</div>
+      </a>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#simulation">The Simulation</a></li>
+          <li><a href="#dupes">The Printing Pod</a></li>
+          <li><a href="#goals">The Three Goals</a></li>
+          <li><a href="#lore">Hidden Depth</a></li>
+          <li><a href="#verdict">Final Thoughts</a></li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews - All opinions are my own.</p>
+  </footer>
+
+</body>
+</html>
