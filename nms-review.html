@@ -135,14 +135,8 @@
     .wormy-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nms-orange); flex-shrink: 0; }
     .wormy-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-style: italic; color: var(--nms-orange); }
 
-    /* --- LORE BOX ---------------------------------------- */
-    .lore-box {
-      background: rgba(155, 89, 182, 0.05);
-      border: 1px solid rgba(155, 89, 182, 0.2);
-      padding: 1.5rem; margin: 2rem 0;
-      font-family: 'DM Mono', monospace; font-size: 0.9rem;
-    }
-    .lore-char { color: var(--nms-purple); display: inline-block; min-width: 1ch; }
+    /* --- LORE BOX --- */
+    .lore-flicker { color: var(--nms-purple); transition: color 0.1s; }
 
     /* --- ROSIE APPROVED STAMP ---------------------------- */
     .stamp-container {
@@ -274,14 +268,14 @@
     <article class="article-body">
 
       <p>
-        I was first introduced to <strong>No Man's Sky</strong> in 2019, and I instantly fell in love with it, even if I wasn’t that good at it. Dying first on a radioactive planet, then a frosty one—it was a trial by fire, but the universe kept pulling me back.
+        I was first introduced to <strong>No Man's Sky</strong> in 2019, and I instantly fell in love with it, even if I wasn’t that good at it. Dying first on a radioactive planet, then a frosty one - it was a trial by fire, but the universe kept pulling me back.
       </p>
 
       <img src="https://cdn.wccftech.com/wp-content/uploads/2024/07/16_9-scaled.jpg" alt="No Man's Sky Galaxy" class="article-image" />
       <div class="article-image-caption">The scale of No Man's Sky is difficult to comprehend until you're staring at the horizon of a world no one else has ever seen.</div>
 
       <p>
-        But there was something always so amazing about No Man's Sky to me. It is a place where I find creatures which were never discovered before, I find planets no one ever knew existed, and yet, I find discovered planets too—places people have been, bases people have left years prior, and remain forever. Remnants of someone once forever changes this universe.
+        But there was something always so amazing about No Man's Sky to me. It is a place where I find creatures which were never discovered before, I find planets no one ever knew existed, and yet, I find discovered planets too - places people have been, bases people have left years prior, and remain forever. Remnants of someone once forever changes this universe.
       </p>
 
       <img src="https://cdn.mos.cms.futurecdn.net/hGemFNJcbB7h9yhBivNDQo.jpg" alt="Exploration in NMS" class="article-image" />
@@ -307,10 +301,7 @@
       <ul class="content-list">
         <li>3 entire languages to learn</li>
         <li>
-          A plethora of secrets and lore
-          <div class="lore-box">
-            "The universe is <span class="lore-char" id="lore1">1</span> of <span class="lore-char" id="lore2">6</span> possibilities..."
-          </div>
+          <span id="lore-text">A plethora of secrets and lore</span>
         </li>
         <li>The Atlas, and Nexus, both offering characters and things to do</li>
         <li>Thousands of thousands of ships to find and explore</li>
@@ -344,11 +335,11 @@
       </div>
 
       <p>
-        The thing is, I could list many more, but I won't, it will be outdated in 3 months anyways. Recently they added modular ships you can sky dive from or walk on the inside of, or even float around in space from, and then right as I started this review, they added battling with animals—you can basically play Pokemon with procedurally generated animals. Some may have an advantage, for example, Wormy :).
+        The thing is, I could list many more, but I won't, it will be outdated in 3 months anyways. Recently they added modular ships you can sky dive from or walk on the inside of, or even float around in space from, and then right as I started this review, they added battling with animals - you can basically play Pokemon with procedurally generated animals. Some may have an advantage, for example, Wormy :).
       </p>
 
       <p>
-        This game has no ending, and is not a hard game. As soon as you hit lift off on a new save file, death is fairly rare—at least punishable death. For those of you playing perma-death, you are brave; I fell through my freighter one too many times to do that.
+        This game has no ending, and is not a hard game. As soon as you hit lift off on a new save file, death is fairly rare - at least punishable death. For those of you playing perma-death, you are brave; I fell through my freighter one too many times to do that.
       </p>
 
       <p>
@@ -418,21 +409,27 @@
   </footer>
 
   <script>
-    // Lore character switching script
-    const loreChars = ['1', '6', '?', '!', 'X', 'O', '∆'];
-    const el1 = document.getElementById('lore1');
-    const el2 = document.getElementById('lore2');
+    // Lore character flickering script
+    const originalText = "A plethora of secrets and lore";
+    const loreEl = document.getElementById('lore-text');
 
     setInterval(() => {
-      if (Math.random() > 0.8) {
-        el1.textContent = loreChars[Math.floor(Math.random() * loreChars.length)];
-        el2.textContent = loreChars[Math.floor(Math.random() * loreChars.length)];
-        setTimeout(() => {
-          el1.textContent = '1';
-          el2.textContent = '6';
-        }, 150);
+      if (Math.random() > 0.85) {
+        const chars = originalText.split('');
+        const index = Math.floor(Math.random() * chars.length);
+        
+        if (chars[index] !== ' ') {
+          chars[index] = Math.random() > 0.5 ? '1' : '6';
+          loreEl.innerHTML = chars.map((c, i) => 
+            i === index ? `<span class="lore-flicker">${c}</span>` : c
+          ).join('');
+          
+          setTimeout(() => {
+            loreEl.textContent = originalText;
+          }, 150);
+        }
       }
-    }, 2000);
+    }, 1200);
   </script>
 
 </body>
