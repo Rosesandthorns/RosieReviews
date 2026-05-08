@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>No Man's Sky Review - Rosie Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --crimson:       #8B0000;
+      --crimson-mid:   #B01020;
+      --crimson-bright:#D4233A;
+      --crimson-glow:  rgba(180, 20, 40, 0.35);
+      --bg:            #050508;
+      --bg-2:          #0a0a0f;
+      --text:          #f0f0f5;
+      --text-muted:    #a0a0c0;
+      --text-faint:    #4a4a6a;
+      --border:        rgba(70, 70, 120, 0.25);
+      --border-bright: rgba(100, 100, 255, 0.5);
+      --nms-orange:    #ff7f50;
+      --nms-blue:      #4a90e2;
+      --nms-purple:    #9b59b6;
+      --nms-glow:      rgba(74, 144, 226, 0.3);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+      animation: blobPulse var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+    }
+
+    .blob-1 { width: 700px; height: 700px; background: radial-gradient(circle, #1a1a4a 0%, transparent 70%); top: -200px; left: -150px; --dur: 15s; --delay: 0s; }
+    .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #3d0a3d 0%, transparent 70%); bottom: 100px; right: -100px; --dur: 12s; --delay: -5s; }
+    .blob-3 { width: 400px; height: 400px; background: radial-gradient(circle, #0a2e2e 0%, transparent 70%); top: 50%; right: 20%; --dur: 18s; --delay: -3s; }
+
+    @keyframes blobPulse {
+      0%, 100% { opacity: 0.15; transform: scale(1); }
+      50%       { opacity: 0.3; transform: scale(1.15); }
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(5,5,8,0.97), transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--nms-blue); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.25s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--nms-blue); transition: right 0.3s ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* --- HERO -------------------------------------------- */
+    .article-hero {
+      position: relative; z-index: 1;
+      padding: 9rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
+    .breadcrumb a { color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--nms-blue); }
+    .breadcrumb .sep { opacity: 0.4; }
+
+    .article-tags { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--nms-blue); border: 1px solid var(--nms-blue); padding: 0.2rem 0.6rem; }
+    .tag-orange { color: var(--nms-orange); border-color: var(--nms-orange); }
+
+    .article-title { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1rem; max-width: 1000px; animation: fadeUp 0.7s ease both; }
+
+    .article-opening { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic; color: var(--text-muted); max-width: 720px; line-height: 1.55; margin-bottom: 2rem; border-left: 3px solid var(--nms-orange); padding-left: 1.5rem; animation: fadeUp 0.7s 0.1s ease both; }
+
+    .article-meta-bar { display: flex; align-items: center; gap: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--nms-blue); flex-shrink: 0; }
+
+    /* --- ARTICLE LAYOUT ---------------------------------- */
+    .article-layout { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 280px; gap: 4rem; padding: 4rem 4rem 6rem; max-width: 1400px; }
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.2rem; line-height: 1.85; color: var(--text-muted); margin-bottom: 1.6rem; }
+    .article-body p strong { color: var(--text); font-weight: 600; }
+
+    .article-body h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text); margin: 3rem 0 1.2rem; line-height: 1.15; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+
+    .article-image { width: 100%; border: 1px solid var(--border); display: block; margin: 2rem 0; object-fit: cover; }
+    .article-image-caption { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--text-faint); text-align: center; margin-top: -1.5rem; margin-bottom: 2rem; padding: 0.5rem; border: 1px solid var(--border); border-top: none; }
+
+    /* --- PAMPHLET STYLE ---------------------------------- */
+    .pamphlet-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin: 3rem 0;
+    }
+
+    .pamphlet-card {
+      background: var(--bg-2); border: 1px solid var(--border);
+      padding: 1rem; display: flex; flex-direction: column; gap: 1rem;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .pamphlet-card:hover { transform: translateY(-5px); border-color: var(--nms-blue); }
+
+    .pamphlet-img { width: 100%; height: 180px; object-fit: cover; border: 1px solid var(--border); }
+    .pamphlet-text { font-family: 'DM Mono', monospace; font-size: 0.8rem; line-height: 1.4; color: var(--text-muted); }
+
+    /* --- WORMY CALLOUT ----------------------------------- */
+    .wormy-callout {
+      margin: 2.5rem 0;
+      padding: 2rem;
+      background: rgba(255, 127, 80, 0.05);
+      border: 1px solid rgba(255, 127, 80, 0.3);
+      border-left: 4px solid var(--nms-orange);
+      display: flex; align-items: center; gap: 2rem;
+    }
+    .wormy-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nms-orange); flex-shrink: 0; }
+    .wormy-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-style: italic; color: var(--nms-orange); }
+
+    /* --- LORE BOX ---------------------------------------- */
+    .lore-box {
+      background: rgba(155, 89, 182, 0.05);
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      padding: 1.5rem; margin: 2rem 0;
+      font-family: 'DM Mono', monospace; font-size: 0.9rem;
+    }
+    .lore-char { color: var(--nms-purple); display: inline-block; min-width: 1ch; }
+
+    /* --- ROSIE APPROVED STAMP ---------------------------- */
+    .stamp-container {
+      margin: 4rem 0; display: flex; justify-content: center;
+    }
+    .rosie-stamp {
+      border: 4px double var(--nms-blue);
+      padding: 1.5rem 3rem;
+      color: var(--nms-blue);
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      transform: rotate(-5deg);
+      background: rgba(74, 144, 226, 0.05);
+      box-shadow: 0 0 40px var(--nms-glow);
+      position: relative;
+    }
+    .rosie-stamp::after {
+      content: '✓'; position: absolute; top: -1rem; right: -1rem;
+      font-size: 3rem; color: var(--nms-orange);
+    }
+
+    /* --- QUOTE BLOCK ------------------------------------- */
+    .quote-block {
+      border-left: 4px solid var(--nms-blue);
+      padding-left: 1.5rem;
+      margin: 2.5rem 0;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+    }
+
+    /* --- LIST -------------------------------------------- */
+    .content-list {
+      list-style: none; margin: 2rem 0; display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .content-list li {
+      padding-left: 2rem; position: relative; font-size: 1.1rem; color: var(--text-muted);
+    }
+    .content-list li::before {
+      content: '✦'; position: absolute; left: 0; color: var(--nms-blue);
+    }
+
+    /* --- FINAL SCORE ------------------------------------- */
+    .final-score-section { margin: 4rem 0 2rem; position: relative; text-align: center; }
+    .final-score-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .final-score-label::before, .final-score-label::after { content: ''; width: 3rem; height: 1px; background: rgba(74, 144, 226, 0.4); }
+    .score-reveal { position: relative; display: inline-block; }
+    .score-big { font-family: 'Playfair Display', serif; font-size: 11rem; font-weight: 900; line-height: 1; color: var(--nms-blue); letter-spacing: -0.04em; text-shadow: 0 0 80px var(--nms-glow); animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .score-denom { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 400; color: var(--text-faint); vertical-align: super; line-height: 1; }
+    .score-verdict-word { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; letter-spacing: 0.05em; }
+
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    /* --- SIDEBAR ----------------------------------------- */
+    .article-sidebar { position: sticky; top: 7rem; align-self: start; display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar-card { background: var(--bg-2); border: 1px solid var(--border); padding: 1.5rem; }
+    .sidebar-card-title { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1.2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .sidebar-score { text-align: center; padding: 1rem 0; }
+    .sidebar-score-num { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900; color: var(--nms-blue); line-height: 1; text-shadow: 0 0 40px var(--nms-glow); }
+    .sidebar-score-denom { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-faint); }
+    .sidebar-score-verdict { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--nms-blue); margin-top: 0.4rem; }
+    .sidebar-detail { display: flex; flex-direction: column; gap: 0.7rem; }
+    .sidebar-row { display: flex; justify-content: space-between; align-items: baseline; font-family: 'DM Mono', monospace; font-size: 0.62rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+    .sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sidebar-row-key { letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+    .sidebar-row-val { color: var(--text); text-align: right; max-width: 55%; }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; }
+    footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; color: var(--text-faint); }
+    footer .footer-logo span { color: var(--nms-blue); }
+    footer p { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-faint); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-canvas">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Rosie <span>Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="game-reviews.html">Games</a></li>
+      <li><a href="tech-reviews.html">Tech</a></li>
+    </ul>
+  </nav>
+
+  <div class="article-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="game-reviews.html">Game Reviews</a>
+      <span class="sep">/</span>
+      <span>No Man's Sky</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Game Review</span>
+      <span class="tag">Space Exploration</span>
+      <span class="tag">Survival</span>
+      <span class="tag-orange tag">Rosie Approved</span>
+      <span class="tag tag-neutral">PC / Console</span>
+    </div>
+    <h1 class="article-title">The Game That Refused to Give Up</h1>
+    <p class="article-opening">
+      No Man's Sky is a testament to developer love. It is a universe that feels infinite because it is, and yet it feels personal because of the traces we leave behind.
+    </p>
+    <div class="article-meta-bar">
+      <div class="meta-item"><div class="meta-dot"></div><span>Hello Games</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>Exploration / Survival</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>PC / PS5 / Xbox</span></div>
+      <div class="meta-item"><div class="meta-dot"></div><span>~15 min read</span></div>
+    </div>
+  </div>
+
+  <div class="article-layout">
+    <article class="article-body">
+
+      <p>
+        I was first introduced to <strong>No Man's Sky</strong> in 2019, and I instantly fell in love with it, even if I wasn’t that good at it. Dying first on a radioactive planet, then a frosty one—it was a trial by fire, but the universe kept pulling me back.
+      </p>
+
+      <img src="https://cdn.wccftech.com/wp-content/uploads/2024/07/16_9-scaled.jpg" alt="No Man's Sky Galaxy" class="article-image" />
+      <div class="article-image-caption">The scale of No Man's Sky is difficult to comprehend until you're staring at the horizon of a world no one else has ever seen.</div>
+
+      <p>
+        But there was something always so amazing about No Man's Sky to me. It is a place where I find creatures which were never discovered before, I find planets no one ever knew existed, and yet, I find discovered planets too—places people have been, bases people have left years prior, and remain forever. Remnants of someone once forever changes this universe.
+      </p>
+
+      <img src="https://cdn.mos.cms.futurecdn.net/hGemFNJcbB7h9yhBivNDQo.jpg" alt="Exploration in NMS" class="article-image" />
+
+      <p>
+        The game has received nothing but constant love and updates from the developers, and I have to break my own oath for this review.
+      </p>
+
+      <div class="quote-block">
+        "I play every game to completion before writing a single word. If I haven't finished it, you won't find a review of it here."
+      </div>
+
+      <p>
+        I can't say I have played this game to completion, because every time I spend a hundred or so hours exploring new content, the devs immediately release more content and make me have to restart this review.
+      </p>
+
+      <h2 id="content">The Most Content for its Price</h2>
+
+      <p>
+        No Man's Sky is the game that I will say has the most content for its price. It features:
+      </p>
+
+      <ul class="content-list">
+        <li>3 entire languages to learn</li>
+        <li>
+          A plethora of secrets and lore
+          <div class="lore-box">
+            "The universe is <span class="lore-char" id="lore1">1</span> of <span class="lore-char" id="lore2">6</span> possibilities..."
+          </div>
+        </li>
+        <li>The Atlas, and Nexus, both offering characters and things to do</li>
+        <li>Thousands of thousands of ships to find and explore</li>
+        <li>Storylines on abandoned planets</li>
+        <li>Deep Sea Horrors that scared the life out of me</li>
+        <li>Broken down space stations and giant floating wrecks filled with horrific horrors</li>
+      </ul>
+
+      <div class="wormy-callout">
+        <img src="https://static.miraheze.org/nmsgalactichubwiki/2/20/Leve_Immortal_Worm_-1.jpg" alt="Wormy" class="wormy-img" />
+        <div class="wormy-text">Wormy :)</div>
+      </div>
+
+      <p>
+        Overall, the game offers so many playstyles so I would recommend this game to <strong>anyone</strong>.
+      </p>
+
+      <div class="pamphlet-grid">
+        <div class="pamphlet-card">
+          <img src="https://static1.thegamerimages.com/wordpress/wp-content/uploads/2023/04/no-man-s-sky-interceptor-sentinel-freighter-1.jpg" alt="PVE" class="pamphlet-img" />
+          <div class="pamphlet-text">PVE as pirates raiding peaceful and friendly ships, being attacked by giant ships</div>
+        </div>
+        <div class="pamphlet-card">
+          <img src="https://tse1.mm.bing.net/th/id/OIP.jSWKdy1TbYoATNuxfNRUBgHaEk?pid=Api&P=0&h=180" alt="Farm and Build" class="pamphlet-img" />
+          <div class="pamphlet-text">Farm and Build and live a peaceful life on a desolate planet with no one in many light years to bat an eye</div>
+        </div>
+        <div class="pamphlet-card">
+          <img src="https://tse3.mm.bing.net/th/id/OIP.XXJ5g9r2kywZxeI2ZSc9iAHaEK?pid=Api&P=0&h=180" alt="Unknown" class="pamphlet-img" />
+          <div class="pamphlet-text">Find whatever this guy is (Seriously, what is he?)</div>
+        </div>
+      </div>
+
+      <p>
+        The thing is, I could list many more, but I won't, it will be outdated in 3 months anyways. Recently they added modular ships you can sky dive from or walk on the inside of, or even float around in space from, and then right as I started this review, they added battling with animals—you can basically play Pokemon with procedurally generated animals. Some may have an advantage, for example, Wormy :).
+      </p>
+
+      <p>
+        This game has no ending, and is not a hard game. As soon as you hit lift off on a new save file, death is fairly rare—at least punishable death. For those of you playing perma-death, you are brave; I fell through my freighter one too many times to do that.
+      </p>
+
+      <p>
+        I will not say this game is perfect, but I will say, this game has some of the most love out of any game I have ever seen, or even heard of. This game went from a wreck on launch to managing multiple cities, planets, universes, creatures, ships, fleets.
+      </p>
+
+      <div class="stamp-container">
+        <div class="rosie-stamp">Rosie Approved</div>
+      </div>
+
+      <p>
+        If any game deserves the Rosie Approved stamp, even if this game does not have my highest rating, this game earns it.
+      </p>
+
+      <div class="final-score-section">
+        <div class="final-score-label">Final Verdict</div>
+        <div class="score-reveal">
+          <div class="score-big">8.5<span class="score-denom">/10</span></div>
+        </div>
+        <div class="score-verdict-word">Exceptional</div>
+      </div>
+
+    </article>
+
+    <aside class="article-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Score</div>
+        <div class="sidebar-score">
+          <div class="sidebar-score-num">8.5<span class="sidebar-score-denom">/10</span></div>
+          <div class="sidebar-score-verdict">Exceptional</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Game Details</div>
+        <div class="sidebar-detail">
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Developer</span>
+            <span class="sidebar-row-val">Hello Games</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Genre</span>
+            <span class="sidebar-row-val">Space Exploration</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Platform</span>
+            <span class="sidebar-row-val">PC, Console</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Difficulty</span>
+            <span class="sidebar-row-val">Medium</span>
+          </div>
+          <div class="sidebar-row">
+            <span class="sidebar-row-key">Active Updates</span>
+            <span class="sidebar-row-val">Yes</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Rosie <span>Reviews</span></div>
+    <p>&copy; 2025 Rosie Reviews - All opinions are my own.</p>
+  </footer>
+
+  <script>
+    // Lore character switching script
+    const loreChars = ['1', '6', '?', '!', 'X', 'O', '∆'];
+    const el1 = document.getElementById('lore1');
+    const el2 = document.getElementById('lore2');
+
+    setInterval(() => {
+      if (Math.random() > 0.8) {
+        el1.textContent = loreChars[Math.floor(Math.random() * loreChars.length)];
+        el2.textContent = loreChars[Math.floor(Math.random() * loreChars.length)];
+        setTimeout(() => {
+          el1.textContent = '1';
+          el2.textContent = '6';
+        }, 150);
+      }
+    }, 2000);
+  </script>
+
+</body>
+</html>
